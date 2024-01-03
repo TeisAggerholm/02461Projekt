@@ -55,7 +55,7 @@
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
     <vType id="veh_passenger" vClass="passenger"/>
-    <trip id="veh0" type="veh_passenger" depart="0.00" departLane="best" departSpeed="max" from="-125514713" to="-125514709"/>
+    <trip id="veh0" type="veh_passenger" depart="0.00" departLane="best" departSpeed="max" from="548975769" to="125514711"/>
     <trip id="veh1" type="veh_passenger" depart="2" departLane="best" departSpeed="max" from="125514709" to="125514711"/>
     <trip id="veh2" type="veh_passenger" depart="4" departLane="best" departSpeed="max" from="-125514713" to="-125514709"/>
     <trip id="veh3" type="veh_passenger" depart="6" departLane="best" departSpeed="max" from="-125514711" to="-125514709"/>
@@ -76,13 +76,6 @@
     <trip id="veh18" type="veh_passenger" depart="80" departLane="best" departSpeed="max" from="125514709" to="125514711"/>
     <trip id="veh19" type="veh_passenger" depart="82" departLane="best" departSpeed="max" from="-125514711" to="-548975769"/>
     <trip id="veh20" type="veh_passenger" depart="84" departLane="best" departSpeed="max" from="-125514711" to="-548975769"/>
-    <trip id="veh21" type="veh_passenger" depart="86" departLane="best" departSpeed="max" from="-125514711" to="-548975769"/>
-    <trip id="veh22" type="veh_passenger" depart="88" departLane="best" departSpeed="max" from="-125514711" to="-548975769"/>
-    <trip id="veh23" type="veh_passenger" depart="90" departLane="best" departSpeed="max" from="-125514711" to="-548975769"/>
-    <trip id="veh24" type="veh_passenger" depart="92" departLane="best" departSpeed="max" from="-125514711" to="-548975769"/>
-    <trip id="veh25" type="veh_passenger" depart="94" departLane="best" departSpeed="max" from="-125514711" to="-548975769"/>
-    <trip id="veh26" type="veh_passenger" depart="96" departLane="best" departSpeed="max" from="-125514711" to="-548975769"/>
-    <trip id="veh27" type="veh_passenger" depart="100" departLane="best" departSpeed="max" from="-125514711" to="-548975769"/>
-    <trip id="veh28" type="veh_passenger" depart="100" departLane="best" departSpeed="max" from="-125514711" to="-548975769"/>
+    
 
 </routes>
