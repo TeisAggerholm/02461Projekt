@@ -56,5 +56,6 @@ class simulation:
                if value != 0:
                     halting_count += 1
           return total_vehicle_count, halting_count
-
-simulation('sumo_files/osm.sumocfg', 200).run()
+     
+if __name__ == '__main__':
+     simulation('sumo_files/osm.sumocfg', 200).run()
