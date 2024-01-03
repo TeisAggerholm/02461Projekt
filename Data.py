@@ -6,10 +6,9 @@ sumo_config_path = 'sumo_files/osm.sumocfg'
 
 traci.start(["sumo", "-c", sumo_config_path])
 
-for step in range(10):
+for step in range(200):
      traci.simulationStep()
+     print(step)
 
-     vehicle_positions = traci.vehicle.getPosition("vehicle_id")
-     vehicle_speed = traci.vehicle.getSpeed("vehicle_id")
 
 traci.close()
