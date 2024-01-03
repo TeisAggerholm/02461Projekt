@@ -1,8 +1,6 @@
 import traci
 import os
 
-# sumo_path = 'sumo_files/osm.sumocfg'
-
 class simulation:
      waiting_times = {}
      co2_emission = 0
