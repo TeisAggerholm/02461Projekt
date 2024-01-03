@@ -1,0 +1,15 @@
+{
+    "simulation":{
+        "gui": false
+    },
+    "environment":{
+        "name": "Environment_4_arms"
+    },
+    "model":{
+      "name": "Interval_model"  
+    },
+    "agent":{
+        "gamma": 0.75,
+        "epsilon": 0.9
+    }
+}
