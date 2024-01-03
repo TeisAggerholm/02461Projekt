@@ -1,59 +1,62 @@
 import traci
 import os
 
-sumo_path = 'sumo_files/osm.sumocfg'
+# sumo_path = 'sumo_files/osm.sumocfg'
 
-traci.start(["sumo-gui", "-c", sumo_path])
-
-waiting_times = {}
-co2_emission = 0
-max_step = 200
-sum_queue = 0
-
-def get_queue_length(): 
-     Halt_N = traci.edge.getLastStepHaltingNumber("-125514711")
-     Halt_S = traci.edge.getLastStepHaltingNumber("125514709")
-     Halt_E = traci.edge.getLastStepHaltingNumber("548975769")
-     Halt_W = traci.edge.getLastStepHaltingNumber("-125514713")
+class simulation:
+     waiting_times = {}
+     co2_emission = 0
+     sum_queue = 0
+     def __init__(self, sumo_path, max_step):
+          self.sumo_path = sumo_path
+          self.max_step = max_step
      
-     return Halt_N, Halt_S, Halt_E, Halt_W
+     def run(self):
+          traci.start(["sumo", "-c", self.sumo_path])
+          for step in range(self.max_step):
+               traci.simulationStep()
+               vehicles = traci.vehicle.getIDList()
+               for vehicle in vehicles:
+                    simulation(self.sumo_path,self.max_step).get_waiting_time(vehicle)
+                    self.co2_emission += simulation(self.sumo_path,self.max_step).get_co2_emission(vehicle)
 
-for step in range(max_step):
-     traci.simulationStep()
-     #print(step)
+                    self.sum_queue += sum(simulation(self.sumo_path,self.max_step).get_queue_length())
+          
+          total_waiting_time = sum(self.waiting_times.values())
+      
+          print("This is the avg. waitingTime: ",total_waiting_time/simulation(self.sumo_path,self.max_step).count_halting_vehicles()[0])
+          print("This is the halting vehicle count: ", simulation(self.sumo_path,self.max_step).count_halting_vehicles()[1])
+          print("This is the CO2 Emission: ", round(self.co2_emission/1000), "gram CO2")
+          print("This is the avg. halting number per step: ", self.sum_queue/self.max_step)
 
-     vehicles = traci.vehicle.getIDList()
-     for vehicle in vehicles: 
+          traci.close()
 
-          #Getting waitng time: 
-          wait_time = traci.vehicle.getAccumulatedWaitingTime(vehicle)
-          waiting_times[vehicle] = wait_time
+     def get_queue_length(self): 
+          Halt_N = traci.edge.getLastStepHaltingNumber("-125514711")
+          Halt_S = traci.edge.getLastStepHaltingNumber("125514709")
+          Halt_E = traci.edge.getLastStepHaltingNumber("548975769")
+          Halt_W = traci.edge.getLastStepHaltingNumber("-125514713")
+          
+          return Halt_N, Halt_S, Halt_E, Halt_W
 
-          #Getting CO2 emission: 
-          step_length = traci.vehicle.getActionStepLength(vehicle)
-          co2_emission_car = traci.vehicle.getCO2Emission(vehicle)
+     def get_waiting_time(self, vehicle):
+          self.vehicle = vehicle
+          wait_time = traci.vehicle.getAccumulatedWaitingTime(self.vehicle)
+          self.waiting_times[self.vehicle] = wait_time
+     
+     def get_co2_emission(self,vehicle):
+          self.vehicle = vehicle
+          co2_emission_car = traci.vehicle.getCO2Emission(self.vehicle)
+          return co2_emission_car
+          
 
-          co2_emission += float(step_length) * co2_emission_car
+     def count_halting_vehicles(self):
+          total_vehicle_count = 0
+          halting_count = 0
+          for value in self.waiting_times.values():
+               total_vehicle_count += 1
+               if value != 0:
+                    halting_count += 1
+          return total_vehicle_count, halting_count
 
-          #Getting the total halting cars in this step
-          get_queue_length()
-          sum_queue += sum(get_queue_length())
-
-
-total_waiting_time = sum(waiting_times.values())          
-
-#Counting vehicles and halting vehicles
-total_vehicle_count = 0
-halting_count = 0
-for value in waiting_times.values():
-     total_vehicle_count += 1
-     if value != 0:
-          halting_count += 1
-
-
-print("This is the avg. waitingTime: ",total_waiting_time/total_vehicle_count)
-print("This is the halting vehicle count: ", halting_count)
-print("This is the CO2 Emission: ", round(co2_emission/1000), "gram CO2")
-print("This is the avg. halting number per step: ", sum_queue/max_step)
-
-traci.close()
+simulation('sumo_files/osm.sumocfg', 200).run()
