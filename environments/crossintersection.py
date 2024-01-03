@@ -13,6 +13,36 @@ class CrossIntersection():
         self.lane = ["-125514713_0", "-125514711_0", "-548975769_0", "125514709_0"]
         self.traffic_light_system_id = "24960712"
 
+    def _take_action(self, action_num):
+        pass
+
+    def _get_phases(self):
+        # Get the complete definition of the traffic light, which includes all programs and their phases
+        tls_definitions = traci.trafficlight.getCompleteRedYellowGreenDefinition(self.traffic_light_system_id)
+        
+        # Iterate over each traffic light logic (program)
+        for logic in tls_definitions:
+            print(f"Traffic Light {self.traffic_light_system_id} has the following phases in program {logic.programID}:")
+            
+            # Iterate over each phase in the logic
+            for phase in logic.getPhases():
+                print(f"Phase index {logic.getPhases().index(phase)}: {phase.state} with duration {phase.duration} seconds")
+
+    def _set_phases(self):
+        logic = traci.trafficlight.Logic(
+            programID="newProgramID",
+            type=0, 
+            currentPhaseIndex=0,
+            phases=[
+                traci.trafficlight.Phase(10, "rrGrrrGrrrGrrrGr"),
+                traci.trafficlight.Phase(10, "rrGrrrGrrrGrrrGr"),  
+                traci.trafficlight.Phase(10, "rrGrrrGrrrGrrrGr"),  
+                traci.trafficlight.Phase(10, "rrGrrrGrrrGrrrGr")
+            ]
+        )   
+
+        traci.trafficlight.setCompleteRedYellowGreenDefinition(self.traffic_light_system_id, logic)
+
     # def _get_state(self):
     #     # Determine which lanes are occupied
     #     occupied_lanes = []
@@ -55,6 +85,8 @@ sumo_config_path = 'sumo_files/osm.sumocfg'
 traci.start(["sumo-gui", "-c", sumo_config_path])
 
 environment = CrossIntersection(3)
+environment._set_phases()
+environment._get_phases()
 
 for step in range(200):
     traci.simulationStep()
