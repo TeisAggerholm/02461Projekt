@@ -1,6 +1,6 @@
 import time
 
-class interval_model:
+class Interval_model:
     def __init__(self, interval, num_actions):
         self.interval = interval
         self.num_actions = num_actions
