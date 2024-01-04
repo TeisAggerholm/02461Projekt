@@ -2,9 +2,7 @@ import traci
 import os
 
 class Simulation:
-    def __init__(self, sumo_mode, sumo_path, max_step, _environment, _model):
-        self.sumo_mode = sumo_mode
-        self.sumo_path = sumo_path
+    def __init__(self, max_step, _environment, _model):
         self.max_step = max_step
         self._environment = _environment
         self._model = _model
@@ -14,30 +12,32 @@ class Simulation:
         self.stats = {}
 
     def run(self):
-
-        # fremfor traci.start - så self._environment.start() - så har environment selv styr over sumo_path
-        traci.start([self.sumo_mode, "-c", self.sumo_path])
-
-
+        self._environment.run_env()
         old_action = -1
 
-        for step in range(self.max_step):
+        # routes = self._environment.generate_routes()
+
+        for currentStep in range(self.max_step):
             
             # Model + Environment
-            state = self._environment.get_state()
+            state = None
+            # state = self._environment.get_state()
             action = self._model.choose_action(state)
 
             if action != old_action:
-                steps_to_do = self._environment.change_phases(action)
+                steps_to_do_yellow_phase_1 = self._environment.set_yellow_phase(old_action)
+                self._run_steps(steps_to_do_yellow_phase_1, currentStep)
 
-                while steps_to_do > 0:
-                    traci.simulationStep()
-                    steps_to_do -= 1
-            else:
-                traci.simulationStep()
+                steps_to_do_red_phase = self._environment.set_red_phase()
+                self._run_steps(steps_to_do_red_phase, currentStep)
 
+                steps_to_do_yellow_phase_2 = self._environment.set_yellow_phase(action)
+                self._run_steps(steps_to_do_yellow_phase_2, currentStep)
+
+                steps_to_do_green_phase = self._environment.set_green_phase(action)
+                self._run_steps(steps_to_do_green_phase, currentStep)             
             
-            
+
             # STATS
             vehicles = traci.vehicle.getIDList()
             for vehicle in vehicles:
@@ -50,6 +50,16 @@ class Simulation:
 
         self.set_stats()
         traci.close()
+
+    def _run_steps(self, steps_to_do, currentStep):
+
+        if(currentStep + steps_to_do) >= self.max_step:
+            steps_to_do = self.max_step - currentStep # do not do more steps than the maximum allowed number of steps
+
+        while steps_to_do > 0:
+            traci.simulationStep()  # simulate 1 step in sumo
+            currentStep += 1 # update the step counter
+            steps_to_do -= 1
 
     def set_stats(self):
         self.stats["total_waiting_time"] = sum(self.waiting_times.values())
@@ -84,6 +94,7 @@ class Simulation:
             if value != 0:
                 halting_count += 1
         return total_vehicle_count, halting_count
+     
      
 if __name__ == '__main__':
     print("These are the total stats of the run")

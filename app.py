@@ -1,21 +1,24 @@
 import importlib
-from . import utils
+import utils
 from support.simulation import Simulation
 
 settings = utils.read_settings('settings.json')
 
-# Environment
-environment_name = settings['environment']['name']
-environment = getattr(importlib.import_module(f'environments.{environment_name.lower()}'), environment_name)() # args mangler
-
-# Model
-model_name = utils.read_settings('settings.json')['model']['name']
-model = getattr(importlib.import_module(f'models.{model_name.lower()}'), model_name)() # args mangler
-
 # Params
 sumo_mode = settings["simulation"]["sumo_mode"]
-sumo_path = settings["simulation"]["sumo_path"]
 max_step = settings["simulation"]["max_step"]
+min_green_phase_steps = settings["environment"]["min_green_phase_steps"]
+yellow_phase_steps = settings["environment"]["yellow_phase_steps"]
+red_phase_steps = settings["environment"]["red_phase_steps"]
+
+# Environment
+environment_name = settings['environment']['name']
+environment = getattr(importlib.import_module(f'environments.{environment_name.lower()}'), environment_name)(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps) 
+
+# Model
+model_args = settings["model"]["*args"]
+model_name = utils.read_settings('settings.json')['model']['name']
+model = getattr(importlib.import_module(f'models.{model_name.lower()}'), model_name)(environment.num_actions, *model_name)
 
 # Simulation
-Simulation(sumo_mode, sumo_path, max_step, environment, model)
+Simulation(sumo_mode, max_step, environment, model)

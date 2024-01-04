@@ -1,17 +1,18 @@
 {
     "simulation":{
         "sumo_mode": "sumo_gui",
-        "sumo_path": "sumo_files/osm.sumocfg",
         "max_step": 200
     },
     "environment":{
-        "name": "Environment_4_arms"
+        "name": "CrossIntersection",
+        "min_green_phase_steps": 5,
+        "yellow_phase_steps": 2,
+        "red_phase_steps": 2
     },
     "model":{
-      "name": "Interval_model"  
-    },
-    "agent":{
-        "gamma": 0.75,
-        "epsilon": 0.9
+      "name": "Interval_model",
+      "gamma": 0.75,
+      "epsilon": 0.9,
+      "*args": [10]
     }
 }

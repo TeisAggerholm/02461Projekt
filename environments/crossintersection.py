@@ -7,52 +7,84 @@ class CrossIntersection():
     # funktion: skift lys (tager id på lyskryds som input)
     # funktion: skift til action nr. (tager action nr. som input) - bruger skift lys funktion
 
-    def __init__(self, green_phase_time, yellow_phase_time, red_phase_time):
+    def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps):
+        self.sumo_path = 'sumo_files/osm.sumocfg'
+        self.sumo_mode = sumo_mode
+
+        self.min_green_phase_steps = min_green_phase_steps
+        self.yellow_phase_steps = yellow_phase_steps
+        self.red_phase_steps = red_phase_steps
+
         self.num_actions = 2
-        self.yellow_phase_time = yellow_phase_time
-        self.lane = ["-125514713_0", "-125514711_0", "-548975769_0", "125514709_0"]
-        self.traffic_light_system_id = "24960712"
-        self.set_phases = {
-            1: "rrrrGGggrrrrGGgg", # NS green phase
-            2: "rrrryyyyrrrryyyy", # NS yellow phase
-            3: "rrrrrrrrrrrrrrrr", # all red phase
-            4: "yyyyrrrryyyyrrrr", # EW yello phase
-            5: "GGggrrrrGGggrrrr"  # EW green phases
+
+        self.actions_def = {
+            0: {'green_phase_index': 0, 'yellow_phase_index': 1},
+            1: {'green_phase_index': 3, 'yellow_phase_index': 4}
         }
 
-    def _take_action(self, action_num):
-        pass
+        self.phases = ["rrrrGGggrrrrGGgg", # NS green phase
+                "rrrryyyyrrrryyyy", # NS yellow phase
+                "rrrrrrrrrrrrrrrr", # all red phase
+                "GGggrrrrGGggrrrr",# EW green phase
+                "yyyyrrrryyyyrrrr"] # EW yellow phase
+
+        self.lane = ["-125514713_0", "-125514711_0", "-548975769_0", "125514709_0"]
+        self.traffic_light_system_id = "24960712"
+        
+
+    def run_env(self):
+        traci.start([self.sumo_mode, "-c", self.sumo_path])
+        self._set_phases()
 
     def _get_phases(self):
-        # Get the complete definition of the traffic light, which includes all programs and their phases
         tls_definitions = traci.trafficlight.getCompleteRedYellowGreenDefinition(self.traffic_light_system_id)
-        
-        # Iterate over each traffic light logic (program)
         for logic in tls_definitions:
             print(f"Traffic Light {self.traffic_light_system_id} has the following phases in program {logic.programID}:")
-            
-            # Iterate over each phase in the logic
             for phase in logic.getPhases():
                 print(f"Phase index {logic.getPhases().index(phase)}: {phase.state} with duration {phase.duration} seconds")
 
     def _set_phases(self):
+
         logic = traci.trafficlight.Logic(
             programID="newProgramID",
             type=0, 
             currentPhaseIndex=0,
-            phases=[
-                traci.trafficlight.Phase(10, "rrrrGGggrrrrGGgg"),
-                traci.trafficlight.Phase(5, "rrrryyyyrrrryyyy"),
-                traci.trafficlight.Phase(3, "rrrrrrrrrrrrrrrr"),  
-                traci.trafficlight.Phase(5, "yyyyrrrryyyyrrrr"),  
-                traci.trafficlight.Phase(10, "GGggrrrrGGggrrrr"),
-                traci.trafficlight.Phase(5, "yyyyrrrryyyyrrrr"),
-                traci.trafficlight.Phase(3, "rrrrrrrrrrrrrrrr"),  
-                traci.trafficlight.Phase(5, "rrrryyyyrrrryyyy")
-            ]
-        )   
+            phases=self.phases
+        )
 
         traci.trafficlight.setCompleteRedYellowGreenDefinition(self.traffic_light_system_id, logic)
+  
+    def set_yellow_phase(self, action):
+        phase_index = self.actions_def[action]['yellow_phase_index']
+        traci.trafficlight.setPhase(self.traffic_light_system_id, phase_index)
+
+        return self.yellow_phase_steps
+
+    def set_red_phase(self):
+        phase_index = 2
+        traci.trafficlight.setPhase(self.traffic_light_system_id, phase_index)
+        return self.red_phase_steps
+
+    def set_green_phase(self, action):
+        phase_index = self.actions_def[action]['green_phase_index']
+        traci.trafficlight.setPhase(self.traffic_light_system_id, phase_index)
+
+        return self.min_green_phase_steps
+
+    # def set_green_phase(self, action_number):
+    #     """
+    #     Activate the correct green light combination in sumo
+    #     """
+    #     if action_number == 0:
+    #         traci.trafficlight.setPhase("TL", PHASE_NS_GREEN)
+    #     elif action_number == 1:
+    #         traci.trafficlight.setPhase("TL", PHASE_NSL_GREEN)
+    #     elif action_number == 2:
+    #         traci.trafficlight.setPhase("TL", PHASE_EW_GREEN)
+    #     elif action_number == 3:
+    #         traci.trafficlight.setPhase("TL", PHASE_EWL_GREEN)
+
+
 
     # def _get_state(self):
     #     # Determine which lanes are occupied
@@ -90,22 +122,35 @@ class CrossIntersection():
                 light_states['green'].append(index)
         
         return light_states
-    
-sumo_config_path = 'sumo_files/osm.sumocfg'
-
-traci.start(["sumo-gui", "-c", sumo_config_path])
-
-environment = CrossIntersection(3)
-environment._set_phases()
-environment._get_phases()
-
-for step in range(200):
-    traci.simulationStep()
-    print(step)
-    environment.get_traffic_light_state()
 
 
-traci.close()
+if __name__ == '__main__':
+    sumo_config_path = 'sumo_files/osm.sumocfg'
+
+    traci.start(["sumo-gui", "-c", sumo_config_path])
+
+    environment = CrossIntersection(3)
+    environment._set_phases()
+    environment._get_phases()
+
+    for step in range(200):
+        traci.simulationStep()
+        print(step)
+        environment.get_traffic_light_state()
+
+
+    traci.close()
+
+
+
+
+
+
+
+
+
+
+
 
 
 

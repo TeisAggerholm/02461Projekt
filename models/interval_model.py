@@ -1,7 +1,7 @@
 import time
 
 class Interval_model:
-    def __init__(self, interval, num_actions):
+    def __init__(self, num_actions, interval):
         self.interval = interval
         self.num_actions = num_actions
         self.last_action_time = time.time()
