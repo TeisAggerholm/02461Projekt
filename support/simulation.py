@@ -132,7 +132,7 @@ class CrossIntersection():
 
     def run_env(self):
         traci.start([self.sumo_mode, "-c", self.sumo_path])
-        #self._set_phases()
+        self._set_phases()
 
     def _get_phases(self):
         tls_definitions = traci.trafficlight.getCompleteRedYellowGreenDefinition(self.traffic_light_system_id)
