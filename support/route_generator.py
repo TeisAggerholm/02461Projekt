@@ -5,8 +5,7 @@ class generator:
     def __init__(self, max_step): 
         self.max_step = max_step
 
-    def route_generator(self): 
-        
+    def route_generator(self, percentage_straight):     
         #Antal biler: 
         n_cars = np.random.normal(self.max_step/60*66.667,30)
 
@@ -43,7 +42,7 @@ class generator:
             """, file=routes)
 
             for car, departure in enumerate(new_times): 
-                if np.random.rand(1)<0.75: 
+                if np.random.rand(1)<percentage_straight: 
                     random_int = np.random.randint(1,5)
                     if random_int == 1: 
                         print(f'<vehicle id="N2S{car}" type="standard_car" route="N2S" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
@@ -74,4 +73,5 @@ class generator:
                         print(f'<vehicle id="E2S{car}" type="standard_car" route="E2S" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
 
             print("</routes>", file=routes)
-            
+
+generator(200).route_generator(0.75)
