@@ -23,4 +23,5 @@ model_class = getattr(importlib.import_module(f'models.{model_name.lower()}'), m
 model = model_class(environment.num_actions, *model_args)
 
 # Simulation
-Simulation(max_step, environment, model)
+simulation = Simulation(max_step, environment, model)
+simulation.run()
