@@ -1,13 +1,13 @@
 {
     "simulation":{
-        "sumo_mode": "sumo_gui",
+        "sumo_mode": "sumo",
         "max_step": 200
     },
     "environment":{
         "name": "CrossIntersection",
         "min_green_phase_steps": 5,
-        "yellow_phase_steps": 2,
-        "red_phase_steps": 2
+        "yellow_phase_steps": 1,
+        "red_phase_steps": 1
     },
     "model":{
       "name": "Interval_model",

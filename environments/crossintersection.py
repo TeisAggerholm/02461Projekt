@@ -1,7 +1,6 @@
 import traci
 import os
 
-
 class CrossIntersection():
     # funktion: _get_state
     # funktion: skift lys (tager id på lyskryds som input)
@@ -22,11 +21,13 @@ class CrossIntersection():
             1: {'green_phase_index': 3, 'yellow_phase_index': 4}
         }
 
-        self.phases = ["rrrrGGggrrrrGGgg", # NS green phase
-                "rrrryyyyrrrryyyy", # NS yellow phase
-                "rrrrrrrrrrrrrrrr", # all red phase
-                "GGggrrrrGGggrrrr",# EW green phase
-                "yyyyrrrryyyyrrrr"] # EW yellow phase
+        self.phases = [
+            traci.trafficlight.Phase(10, "rrrrGGggrrrrGGgg"), # NS green phase
+            traci.trafficlight.Phase(2, "rrrryyyyrrrryyyy"), # NS yellow phase
+            traci.trafficlight.Phase(2, "rrrrrrrrrrrrrrrr"), # all red phase
+            traci.trafficlight.Phase(10, "GGggrrrrGGggrrrr"), # EW green phase
+            traci.trafficlight.Phase(2, "yyyyrrrryyyyrrrr"), # EW yellow phase
+        ]
 
         self.lane = ["-125514713_0", "-125514711_0", "-548975769_0", "125514709_0"]
         self.traffic_light_system_id = "24960712"
@@ -140,48 +141,3 @@ if __name__ == '__main__':
 
 
     traci.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#     def _choose_action(self, state, epsilon):
-#         # Use the model to predict the best action given the state
-#         action = self._Model.predict_one(state)
-
-#         # Modify the action selection based on the number of occupied lanes
-#         if state == 0 and len(occupied_lanes) == 1:
-#             # If only one lane is occupied, prioritize the opposite lane
-#             action = (action + 1) % 2
-
-#         return action
-
-
-#     def _set_yellow_phase(self, old_action):
-#         # Determine the yellow phase code based on the previous action
-#         yellow_phase_code = old_action * 2 + 1
-
-#         # Activate the yellow light combination in sumo
-#         traci.trafficlight.setPhase("TL", yellow_phase_code)
-
-
-# class environment_4_arms:
-#     # Skal give hvilket antal mulige actions der er.
-#     # Skal håndtere hvad der sker ved hver action og hermed ændre lyskrydsene.
-
-
-
-#     def __init__(self):
-#         pass
