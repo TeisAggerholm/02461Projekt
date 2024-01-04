@@ -6,6 +6,7 @@ class Simulation:
         self.max_step = max_step
         self._environment = _environment
         self._model = _model
+        self._currentStep = 0
         self.sum_queue = 0
         self.co2_emission = 0
         self.waiting_times = {}
@@ -13,33 +14,34 @@ class Simulation:
 
     def run(self):
         self._environment.run_env()
-       #old_action = -1
+        old_action = -1
 
         # routes = self._environment.generate_routes()
 
-        for currentStep in range(self.max_step):
+        while self._currentStep < self.max_step:
+            # Model + Environment
+            state = {"currentStep": self._currentStep}
+            # state = self._environment.get_state()
+            action = self._model.choose_action(state)
+
+            if old_action == -1:
+                steps_to_do_green_phase = self._environment.set_green_phase(action)
+                self._run_steps(steps_to_do_green_phase)
+            elif action != old_action:
+                steps_to_do_yellow_phase_1 = self._environment.set_yellow_phase(old_action)
+                self._run_steps(steps_to_do_yellow_phase_1)
+
+                steps_to_do_red_phase = self._environment.set_red_phase()
+                self._run_steps(steps_to_do_red_phase)
+
+                steps_to_do_yellow_phase_2 = self._environment.set_yellow_phase(action)
+                self._run_steps(steps_to_do_yellow_phase_2)
+
+                steps_to_do_green_phase = self._environment.set_green_phase(action)
+                self._run_steps(steps_to_do_green_phase)
+            else:
+                self._run_steps(1)
             
-            # # Model + Environment
-            # state = None
-            # # state = self._environment.get_state()
-            # action = self._model.choose_action(state)
-
-            # if action != old_action:
-            #     steps_to_do_yellow_phase_1 = self._environment.set_yellow_phase(old_action)
-            #     self._run_steps(steps_to_do_yellow_phase_1, currentStep)
-
-            #     steps_to_do_red_phase = self._environment.set_red_phase()
-            #     self._run_steps(steps_to_do_red_phase, currentStep)
-
-            #     steps_to_do_yellow_phase_2 = self._environment.set_yellow_phase(action)
-            #     self._run_steps(steps_to_do_yellow_phase_2, currentStep)
-
-            #     steps_to_do_green_phase = self._environment.set_green_phase(action)
-            #     self._run_steps(steps_to_do_green_phase, currentStep)
-            # else:
-            self._run_steps(1, currentStep)
-            
-
             # STATS
             vehicles = traci.vehicle.getIDList()
             for vehicle in vehicles:
@@ -49,19 +51,19 @@ class Simulation:
 
             # UPDATE
             
-            #old_action = action
+            old_action = action
 
         self.set_stats()
         traci.close()
 
-    def _run_steps(self, steps_to_do, currentStep):
+    def _run_steps(self, steps_to_do):
 
-        if(currentStep + steps_to_do) >= self.max_step:
-            steps_to_do = self.max_step - currentStep # do not do more steps than the maximum allowed number of steps
+        if(self._currentStep + steps_to_do) >= self.max_step:
+            steps_to_do = self.max_step - self._currentStep # do not do more steps than the maximum allowed number of steps
 
         while steps_to_do > 0:
             traci.simulationStep()  # simulate 1 step in sumo
-            currentStep += 1 # update the step counter
+            self._currentStep += 1 # update the step counter
             steps_to_do -= 1
 
     def set_stats(self):
