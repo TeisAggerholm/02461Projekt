@@ -8,10 +8,11 @@ class CrossIntersection():
     # funktion: skift lys (tager id på lyskryds som input)
     # funktion: skift til action nr. (tager action nr. som input) - bruger skift lys funktion
 
-    def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step):
+    def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight):
         self.sumo_path = 'sumo_files/osm.sumocfg'
         self.sumo_mode = sumo_mode
         self.max_step = max_step
+        self.percentage_straight = percentage_straight
 
         self.min_green_phase_steps = min_green_phase_steps
         self.yellow_phase_steps = yellow_phase_steps
@@ -37,7 +38,7 @@ class CrossIntersection():
         
 
     def run_env(self):
-        self.route_generate(self.max_step, 0.75)
+        self.route_generate(self.max_step, self.percentage_straight)
         traci.start([self.sumo_mode, "-c", self.sumo_path])
         self._set_phases()
 
