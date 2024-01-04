@@ -46,7 +46,7 @@ class CrossIntersection():
         #Anvend ved kontrol: seed. 
         
         #Antal biler: 
-        n_cars = np.random.normal(max_step/60*66.667,30)
+        n_cars = np.random.normal(max_step/60*33.33,15)
 
         #Hvilken fordeling anvendes til bilernes tider? 
         tider = np.random.weibull(2, int(n_cars))

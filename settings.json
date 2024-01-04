@@ -1,6 +1,6 @@
 {
     "simulation":{
-        "sumo_mode": "sumo",
+        "sumo_mode": "sumo-gui",
         "max_step": 200,
         "percentage_straight": 0.75
     },
