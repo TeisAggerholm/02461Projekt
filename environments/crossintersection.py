@@ -7,11 +7,18 @@ class CrossIntersection():
     # funktion: skift lys (tager id på lyskryds som input)
     # funktion: skift til action nr. (tager action nr. som input) - bruger skift lys funktion
 
-    def __init__(self, yellow_phase_time):
+    def __init__(self, green_phase_time, yellow_phase_time, red_phase_time):
         self.num_actions = 2
         self.yellow_phase_time = yellow_phase_time
         self.lane = ["-125514713_0", "-125514711_0", "-548975769_0", "125514709_0"]
         self.traffic_light_system_id = "24960712"
+        self.set_phases = {
+            1: "rrrrGGggrrrrGGgg", # NS green phase
+            2: "rrrryyyyrrrryyyy", # NS yellow phase
+            3: "rrrrrrrrrrrrrrrr", # all red phase
+            4: "yyyyrrrryyyyrrrr", # EW yello phase
+            5: "GGggrrrrGGggrrrr"  # EW green phases
+        }
 
     def _take_action(self, action_num):
         pass
@@ -34,10 +41,14 @@ class CrossIntersection():
             type=0, 
             currentPhaseIndex=0,
             phases=[
-                traci.trafficlight.Phase(10, "rrGrrrGrrrGrrrGr"),
-                traci.trafficlight.Phase(10, "rrGrrrGrrrGrrrGr"),  
-                traci.trafficlight.Phase(10, "rrGrrrGrrrGrrrGr"),  
-                traci.trafficlight.Phase(10, "rrGrrrGrrrGrrrGr")
+                traci.trafficlight.Phase(10, "rrrrGGggrrrrGGgg"),
+                traci.trafficlight.Phase(5, "rrrryyyyrrrryyyy"),
+                traci.trafficlight.Phase(3, "rrrrrrrrrrrrrrrr"),  
+                traci.trafficlight.Phase(5, "yyyyrrrryyyyrrrr"),  
+                traci.trafficlight.Phase(10, "GGggrrrrGGggrrrr"),
+                traci.trafficlight.Phase(5, "yyyyrrrryyyyrrrr"),
+                traci.trafficlight.Phase(3, "rrrrrrrrrrrrrrrr"),  
+                traci.trafficlight.Phase(5, "rrrryyyyrrrryyyy")
             ]
         )   
 
@@ -95,17 +106,6 @@ for step in range(200):
 
 
 traci.close()
-
-
-
-
-
-
-
-
-
-
-
 
 
 
