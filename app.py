@@ -21,4 +21,4 @@ model_name = utils.read_settings('settings.json')['model']['name']
 model = getattr(importlib.import_module(f'models.{model_name.lower()}'), model_name)(environment.num_actions, *model_name)
 
 # Simulation
-Simulation(sumo_mode, max_step, environment, model)
+Simulation(max_step, environment, model)
