@@ -1,6 +1,8 @@
 import traci
 import os
 
+
+
 class Simulation:
     def __init__(self, max_step, _environment, _model):
         self.max_step = max_step
@@ -120,11 +122,13 @@ class CrossIntersection():
             1: {'green_phase_index': 3, 'yellow_phase_index': 4}
         }
 
-        self.phases = ["rrrrGGggrrrrGGgg", # NS green phase
-                "rrrryyyyrrrryyyy", # NS yellow phase
-                "rrrrrrrrrrrrrrrr", # all red phase
-                "GGggrrrrGGggrrrr",# EW green phase
-                "yyyyrrrryyyyrrrr"] # EW yellow phase
+        self.phases = [
+            traci.trafficlight.Phase(10, "rrrrGGggrrrrGGgg"), # NS green phase
+            traci.trafficlight.Phase(2, "rrrryyyyrrrryyyy"), # NS yellow phase
+            traci.trafficlight.Phase(2, "rrrrrrrrrrrrrrrr"), # all red phase
+            traci.trafficlight.Phase(10, "GGggrrrrGGggrrrr"), # EW green phase
+            traci.trafficlight.Phase(2, "yyyyrrrryyyyrrrr"), # EW yellow phase
+        ]
 
         self.lane = ["-125514713_0", "-125514711_0", "-548975769_0", "125514709_0"]
         self.traffic_light_system_id = "24960712"
