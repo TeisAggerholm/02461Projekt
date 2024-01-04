@@ -14,7 +14,7 @@ red_phase_steps = settings["environment"]["red_phase_steps"]
 # Environment
 environment_name = settings['environment']['name']
 environment_class = getattr(importlib.import_module(f'environments.{environment_name.lower()}'), environment_name)
-environment = environment_class(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps) 
+environment = environment_class(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step) 
 
 # Model
 model_args = settings["model"]["*args"]
