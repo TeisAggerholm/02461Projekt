@@ -14,13 +14,16 @@ class Simulation:
         self.stats = {}
 
     def run(self):
+
+        # fremfor traci.start - så self._environment.start() - så har environment selv styr over sumo_path
         traci.start([self.sumo_mode, "-c", self.sumo_path])
+
 
         old_action = -1
 
         for step in range(self.max_step):
-            traci.simulationStep()
             
+            # Model + Environment
             state = self._environment.get_state()
             action = self._model.choose_action(state)
 
@@ -30,21 +33,22 @@ class Simulation:
                 while steps_to_do > 0:
                     traci.simulationStep()
                     steps_to_do -= 1
+            else:
+                traci.simulationStep()
 
-
-
-
-
-
-
-
-
+            
+            
+            # STATS
             vehicles = traci.vehicle.getIDList()
             for vehicle in vehicles:
                 self.get_waiting_time(vehicle)
                 self.co2_emission += self.get_co2_emission(vehicle)
                 self.sum_queue += sum(self.get_queue_length())
-        
+
+            # UPDATE
+            old_action = action
+
+        self.set_stats()
         traci.close()
 
     def set_stats(self):
@@ -85,3 +89,4 @@ if __name__ == '__main__':
     print("These are the total stats of the run")
     simulation = Simulation('sumo-gui', 'sumo_files/osm.sumocfg', 200)
     simulation.run()
+    print(simulation.stats)

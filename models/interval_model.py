@@ -7,7 +7,7 @@ class Interval_model:
         self.last_action_time = time.time()
         self.last_action_index = -1
 
-    def _choose_action(self, state, *args):
+    def choose_action(self, state, *args):
         current_time = time.time()
         if current_time - self.last_action_time >= self.interval:
             self.last_action_time = current_time
