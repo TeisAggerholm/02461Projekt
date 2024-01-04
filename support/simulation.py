@@ -29,15 +29,15 @@ class simulation:
                     self.sum_queue += sum(sim.get_queue_length())
           
           total_waiting_time = sum(self.waiting_times.values())
-
           avg_wait_time = total_waiting_time/sim.count_halting_vehicles()[0]
           halting_vehicle_count = sim.count_halting_vehicles()[1]
+          vehicle_count = sim.count_halting_vehicles()[0]
           co2_emission_total = round(self.co2_emission/1000)
           avg_queue_length = self.sum_queue/self.max_step
 
           traci.close()
 
-          return avg_wait_time, halting_vehicle_count, co2_emission_total, avg_queue_length
+          return "Avg wait time: " + str(avg_wait_time), "Halting vehicle count: " + str(halting_vehicle_count), "Total CO2: "+str(co2_emission_total),"Avg. queue length: "+str(avg_queue_length), "N cars:" +str(vehicle_count)
 
      def get_queue_length(self): 
           Halt_N = traci.edge.getLastStepHaltingNumber("-125514711")
@@ -69,4 +69,4 @@ class simulation:
      
 if __name__ == '__main__':
      print("These are the total stats of the run")
-     print(simulation('sumo_files/osm.sumocfg', 200,False).run())
+     print(simulation('sumo_files/osm.sumocfg', 200,True).run())

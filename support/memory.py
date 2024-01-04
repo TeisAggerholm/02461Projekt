@@ -1,3 +1,9 @@
 from simulation import simulation
+from route_generator import generator
 
-print(simulation('sumo_files/osm.sumocfg', 200, True).run())
+max_step = 200
+
+
+generator(max_step).route_generator()
+print(simulation('sumo_files/osm.sumocfg', max_step, False).run())
+
