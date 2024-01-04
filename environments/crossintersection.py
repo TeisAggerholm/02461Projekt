@@ -84,32 +84,34 @@ class CrossIntersection():
                 if np.random.rand(1)<percentage_straight: 
                     random_int = np.random.randint(1,5)
                     if random_int == 1: 
-                        print(f'<vehicle id="N2S{car}" type="standard_car" route="N2S" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
+                        route = "N2S"
                     if random_int == 2: 
-                        print(f'<vehicle id="W2E{car}" type="standard_car" route="W2E" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
+                        route = "W2E"
                     if random_int == 3: 
-                        print(f'<vehicle id="S2N{car}" type="standard_car" route="S2N" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)  
+                        route = "S2N"
                     if random_int == 4: 
-                        print(f'<vehicle id="E2W{car}" type="standard_car" route="E2W" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
+                        route = "E2W"
 
                 else: 
                     random_int = np.random.randint(1,9)
                     if random_int == 1: 
-                        print(f'<vehicle id="N2W{car}" type="standard_car" route="N2W" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
+                        route = "N2W"
                     if random_int == 2: 
-                        print(f'<vehicle id="N2E{car}" type="standard_car" route="N2E" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
+                        route = "N2E"
                     if random_int == 3: 
-                        print(f'<vehicle id="W2N{car}" type="standard_car" route="W2N" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)  
+                        route = "W2N"
                     if random_int == 4: 
-                        print(f'<vehicle id="W2S{car}" type="standard_car" route="W2S" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
+                        route = "W2S"
                     if random_int == 5: 
-                        print(f'<vehicle id="S2W{car}" type="standard_car" route="S2W" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
+                        route = "S2W"
                     if random_int == 6: 
-                        print(f'<vehicle id="S2E{car}" type="standard_car" route="S2E" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
+                        route = "S2E"
                     if random_int == 7: 
-                        print(f'<vehicle id="E2N{car}" type="standard_car" route="E2N" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)  
+                        route = "E2N"
                     if random_int == 8: 
-                        print(f'<vehicle id="E2S{car}" type="standard_car" route="E2S" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
+                        route = "E2S"
+                    
+                print(f'<vehicle id="{route}{car}" type="standard_car" route="{route}" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
 
             print("</routes>", file=routes)
         
