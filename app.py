@@ -25,3 +25,4 @@ model = model_class(environment.num_actions, *model_args)
 # Simulation
 simulation = Simulation(max_step, environment, model)
 simulation.run()
+print('-------VORES REGNEDE STATS-------:', simulation.stats)

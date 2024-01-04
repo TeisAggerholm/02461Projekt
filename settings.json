@@ -1,6 +1,6 @@
 {
     "simulation":{
-        "sumo_mode": "sumo-gui",
+        "sumo_mode": "sumo",
         "max_step": 200
     },
     "environment":{
