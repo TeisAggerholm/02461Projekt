@@ -35,7 +35,9 @@ class Simulation:
                 self._run_steps(steps_to_do_yellow_phase_2, currentStep)
 
                 steps_to_do_green_phase = self._environment.set_green_phase(action)
-                self._run_steps(steps_to_do_green_phase, currentStep)             
+                self._run_steps(steps_to_do_green_phase, currentStep)
+            else:
+                  self._run_steps(1, currentStep)
             
 
             # STATS
@@ -46,6 +48,7 @@ class Simulation:
                 self.sum_queue += sum(self.get_queue_length())
 
             # UPDATE
+            
             old_action = action
 
         self.set_stats()
