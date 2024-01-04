@@ -1,6 +1,8 @@
 {
     "simulation":{
-        "gui": false
+        "sumo_mode": "sumo_gui",
+        "sumo_path": "sumo_files/osm.sumocfg",
+        "max_step": 200
     },
     "environment":{
         "name": "Environment_4_arms"
