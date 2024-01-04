@@ -5,25 +5,33 @@ class simulation:
      waiting_times = {}
      co2_emission = 0
      sum_queue = 0
-     def __init__(self, sumo_path, max_step):
+     def __init__(self, sumo_path, max_step, gui:bool):
           self.sumo_path = sumo_path
           self.max_step = max_step
-     
+          self.gui = gui     
+
      def run(self):
-          traci.start(["sumo", "-c", self.sumo_path])
+          sim = simulation(self.sumo_path,self.max_step,self.gui)
+
+          if self.gui: 
+               sumo = "sumo-gui"
+          else: 
+               sumo = "sumo"
+     
+          traci.start([sumo, "-c", self.sumo_path])
           for step in range(self.max_step):
                traci.simulationStep()
                vehicles = traci.vehicle.getIDList()
                for vehicle in vehicles:
-                    simulation(self.sumo_path,self.max_step).get_waiting_time(vehicle)
-                    self.co2_emission += simulation(self.sumo_path,self.max_step).get_co2_emission(vehicle)
+                    sim.get_waiting_time(vehicle)
+                    self.co2_emission += sim.get_co2_emission(vehicle)
 
-                    self.sum_queue += sum(simulation(self.sumo_path,self.max_step).get_queue_length())
+                    self.sum_queue += sum(sim.get_queue_length())
           
           total_waiting_time = sum(self.waiting_times.values())
 
-          avg_wait_time = total_waiting_time/simulation(self.sumo_path,self.max_step).count_halting_vehicles()[0]
-          halting_vehicle_count = simulation(self.sumo_path,self.max_step).count_halting_vehicles()[1]
+          avg_wait_time = total_waiting_time/sim.count_halting_vehicles()[0]
+          halting_vehicle_count = sim.count_halting_vehicles()[1]
           co2_emission_total = round(self.co2_emission/1000)
           avg_queue_length = self.sum_queue/self.max_step
 
@@ -61,4 +69,4 @@ class simulation:
      
 if __name__ == '__main__':
      print("These are the total stats of the run")
-     print(simulation('sumo_files/osm.sumocfg', 200).run())
+     print(simulation('sumo_files/osm.sumocfg', 200,True).run())
