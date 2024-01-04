@@ -69,4 +69,4 @@ class simulation:
      
 if __name__ == '__main__':
      print("These are the total stats of the run")
-     print(simulation('sumo_files/osm.sumocfg', 200,True).run())
+     print(simulation('sumo_files/osm.sumocfg', 200,False).run())

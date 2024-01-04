@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2024-01-02 14:05:14 by Eclipse SUMO netconvert Version v1_19_0+0551-7cbdaa382aa
+<!-- generated on 2024-01-04 11:02:58 by Eclipse SUMO netconvert Version v1_19_0+0551-7cbdaa382aa
 -->
 
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <type-files value="/Users/hectorheltjakobsen/sumo/tools/../data/typemap/osmNetconvert.typ.xml"/>
+        <type-files value="${SUMO_HOME}/data/typemap/osmNetconvert.typ.xml"/>
         <osm-files value="osm_bbox.osm.xml.gz"/>
     </input>
 
