@@ -9,7 +9,10 @@
             "co2_emission_total": 1,
             "avg_queue_length": 1,
             "avg_wait_time": 1
-        }
+            
+        },
+        "car_intensity_per_min": 30,
+        "spredning": 15    
     },
     "environment":{
         "name": "CrossIntersection",

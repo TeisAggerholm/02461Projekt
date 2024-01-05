@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
             <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                  
+   
             <vType accel="1.0" decel="4.5" id="standard_car" length="5.0" minGap="2.5" maxSpeed="25" sigma="0.5" />) 
             
             <route id="N2W" edges="-125514711 125514713"/>
@@ -17,6 +17,7 @@
             <route id="E2W" edges="548975769 125514713"/>
             <route id="E2N" edges="548975769 125514711"/>
             
+<<<<<<< HEAD
 <vehicle id="W2E0" type="standard_car" route="W2E" depart="10.252459126945288" departLane="random" departSpeed="10" />
 <vehicle id="N2E1" type="standard_car" route="N2E" depart="10.488890619620841" departLane="random" departSpeed="10" />
 <vehicle id="N2E2" type="standard_car" route="N2E" depart="18.623022246669052" departLane="random" departSpeed="10" />
@@ -561,4 +562,103 @@
 <vehicle id="W2S541" type="standard_car" route="W2S" depart="458.73489777357884" departLane="random" departSpeed="10" />
 <vehicle id="S2W542" type="standard_car" route="S2W" depart="497.48827656587935" departLane="random" departSpeed="10" />
 <vehicle id="S2E543" type="standard_car" route="S2E" depart="500.0" departLane="random" departSpeed="10" />
+=======
+<vehicle id="N2W0" type="standard_car" route="N2W" depart="11.33538758174756" departLane="random" departSpeed="10" />
+<vehicle id="S2N1" type="standard_car" route="S2N" depart="15.300741483796495" departLane="random" departSpeed="10" />
+<vehicle id="N2W2" type="standard_car" route="N2W" depart="15.31135927449011" departLane="random" departSpeed="10" />
+<vehicle id="W2E3" type="standard_car" route="W2E" depart="15.386838885343678" departLane="random" departSpeed="10" />
+<vehicle id="N2S4" type="standard_car" route="N2S" depart="19.014737279549777" departLane="random" departSpeed="10" />
+<vehicle id="N2S5" type="standard_car" route="N2S" depart="21.43353211974337" departLane="random" departSpeed="10" />
+<vehicle id="S2N6" type="standard_car" route="S2N" depart="21.515643364119168" departLane="random" departSpeed="10" />
+<vehicle id="E2W7" type="standard_car" route="E2W" depart="22.735797315524874" departLane="random" departSpeed="10" />
+<vehicle id="S2N8" type="standard_car" route="S2N" depart="26.31397070134403" departLane="random" departSpeed="10" />
+<vehicle id="E2W9" type="standard_car" route="E2W" depart="30.125289719253278" departLane="random" departSpeed="10" />
+<vehicle id="W2N10" type="standard_car" route="W2N" depart="34.896998499387664" departLane="random" departSpeed="10" />
+<vehicle id="W2N11" type="standard_car" route="W2N" depart="35.85213767241166" departLane="random" departSpeed="10" />
+<vehicle id="S2N12" type="standard_car" route="S2N" depart="36.36842848297082" departLane="random" departSpeed="10" />
+<vehicle id="W2E13" type="standard_car" route="W2E" depart="36.926929599871244" departLane="random" departSpeed="10" />
+<vehicle id="N2E14" type="standard_car" route="N2E" depart="37.926329416765434" departLane="random" departSpeed="10" />
+<vehicle id="S2E15" type="standard_car" route="S2E" depart="39.724503888249366" departLane="random" departSpeed="10" />
+<vehicle id="E2W16" type="standard_car" route="E2W" depart="41.81786557012329" departLane="random" departSpeed="10" />
+<vehicle id="E2W17" type="standard_car" route="E2W" depart="42.863432108915624" departLane="random" departSpeed="10" />
+<vehicle id="E2W18" type="standard_car" route="E2W" depart="43.03898804657587" departLane="random" departSpeed="10" />
+<vehicle id="S2E19" type="standard_car" route="S2E" depart="45.22813066460918" departLane="random" departSpeed="10" />
+<vehicle id="N2S20" type="standard_car" route="N2S" depart="46.83196731508442" departLane="random" departSpeed="10" />
+<vehicle id="W2S21" type="standard_car" route="W2S" depart="47.016479569917095" departLane="random" departSpeed="10" />
+<vehicle id="E2W22" type="standard_car" route="E2W" depart="47.91071061349083" departLane="random" departSpeed="10" />
+<vehicle id="N2S23" type="standard_car" route="N2S" depart="48.00388340848008" departLane="random" departSpeed="10" />
+<vehicle id="W2E24" type="standard_car" route="W2E" depart="48.45231842575494" departLane="random" departSpeed="10" />
+<vehicle id="E2W25" type="standard_car" route="E2W" depart="48.65466802415904" departLane="random" departSpeed="10" />
+<vehicle id="N2W26" type="standard_car" route="N2W" depart="49.06175485888946" departLane="random" departSpeed="10" />
+<vehicle id="E2W27" type="standard_car" route="E2W" depart="49.318448022414096" departLane="random" departSpeed="10" />
+<vehicle id="S2N28" type="standard_car" route="S2N" depart="51.43486115454109" departLane="random" departSpeed="10" />
+<vehicle id="E2W29" type="standard_car" route="E2W" depart="52.100966574634036" departLane="random" departSpeed="10" />
+<vehicle id="N2E30" type="standard_car" route="N2E" depart="53.38785333294469" departLane="random" departSpeed="10" />
+<vehicle id="W2E31" type="standard_car" route="W2E" depart="53.70176522751433" departLane="random" departSpeed="10" />
+<vehicle id="W2E32" type="standard_car" route="W2E" depart="54.61708168642592" departLane="random" departSpeed="10" />
+<vehicle id="S2N33" type="standard_car" route="S2N" depart="54.963061715463326" departLane="random" departSpeed="10" />
+<vehicle id="S2N34" type="standard_car" route="S2N" depart="56.85303888298164" departLane="random" departSpeed="10" />
+<vehicle id="S2E35" type="standard_car" route="S2E" depart="56.987190364481044" departLane="random" departSpeed="10" />
+<vehicle id="S2N36" type="standard_car" route="S2N" depart="57.14784869133172" departLane="random" departSpeed="10" />
+<vehicle id="W2S37" type="standard_car" route="W2S" depart="57.381975513020556" departLane="random" departSpeed="10" />
+<vehicle id="N2S38" type="standard_car" route="N2S" depart="57.49751223339003" departLane="random" departSpeed="10" />
+<vehicle id="W2E39" type="standard_car" route="W2E" depart="57.845006123882094" departLane="random" departSpeed="10" />
+<vehicle id="W2S40" type="standard_car" route="W2S" depart="59.020166603590155" departLane="random" departSpeed="10" />
+<vehicle id="N2S41" type="standard_car" route="N2S" depart="59.187214958239444" departLane="random" departSpeed="10" />
+<vehicle id="S2N42" type="standard_car" route="S2N" depart="63.534306971610256" departLane="random" departSpeed="10" />
+<vehicle id="S2N43" type="standard_car" route="S2N" depart="65.30680682416246" departLane="random" departSpeed="10" />
+<vehicle id="E2W44" type="standard_car" route="E2W" depart="66.93033208867267" departLane="random" departSpeed="10" />
+<vehicle id="S2N45" type="standard_car" route="S2N" depart="69.38347447544685" departLane="random" departSpeed="10" />
+<vehicle id="N2E46" type="standard_car" route="N2E" depart="69.53255005377929" departLane="random" departSpeed="10" />
+<vehicle id="W2E47" type="standard_car" route="W2E" depart="70.06240345812178" departLane="random" departSpeed="10" />
+<vehicle id="N2S48" type="standard_car" route="N2S" depart="70.18330393957122" departLane="random" departSpeed="10" />
+<vehicle id="N2S49" type="standard_car" route="N2S" depart="70.34723318948326" departLane="random" departSpeed="10" />
+<vehicle id="W2E50" type="standard_car" route="W2E" depart="70.37919798821548" departLane="random" departSpeed="10" />
+<vehicle id="W2E51" type="standard_car" route="W2E" depart="74.31375868034252" departLane="random" departSpeed="10" />
+<vehicle id="S2N52" type="standard_car" route="S2N" depart="75.22428897144707" departLane="random" departSpeed="10" />
+<vehicle id="N2S53" type="standard_car" route="N2S" depart="76.08984058852984" departLane="random" departSpeed="10" />
+<vehicle id="N2S54" type="standard_car" route="N2S" depart="77.72000186629742" departLane="random" departSpeed="10" />
+<vehicle id="E2W55" type="standard_car" route="E2W" depart="79.74481647076273" departLane="random" departSpeed="10" />
+<vehicle id="E2N56" type="standard_car" route="E2N" depart="80.97302610110681" departLane="random" departSpeed="10" />
+<vehicle id="E2N57" type="standard_car" route="E2N" depart="82.26831313517673" departLane="random" departSpeed="10" />
+<vehicle id="E2W58" type="standard_car" route="E2W" depart="82.49614976151098" departLane="random" departSpeed="10" />
+<vehicle id="W2E59" type="standard_car" route="W2E" depart="84.40836046877833" departLane="random" departSpeed="10" />
+<vehicle id="E2W60" type="standard_car" route="E2W" depart="90.51426385374758" departLane="random" departSpeed="10" />
+<vehicle id="N2E61" type="standard_car" route="N2E" depart="92.26417528078188" departLane="random" departSpeed="10" />
+<vehicle id="W2N62" type="standard_car" route="W2N" depart="92.67701871769782" departLane="random" departSpeed="10" />
+<vehicle id="N2S63" type="standard_car" route="N2S" depart="93.34468806269285" departLane="random" departSpeed="10" />
+<vehicle id="N2S64" type="standard_car" route="N2S" depart="95.12437129143628" departLane="random" departSpeed="10" />
+<vehicle id="E2W65" type="standard_car" route="E2W" depart="95.76546467697649" departLane="random" departSpeed="10" />
+<vehicle id="N2S66" type="standard_car" route="N2S" depart="98.47627481256316" departLane="random" departSpeed="10" />
+<vehicle id="W2E67" type="standard_car" route="W2E" depart="98.75678235702513" departLane="random" departSpeed="10" />
+<vehicle id="W2E68" type="standard_car" route="W2E" depart="98.96477653782019" departLane="random" departSpeed="10" />
+<vehicle id="N2S69" type="standard_car" route="N2S" depart="98.9709304379019" departLane="random" departSpeed="10" />
+<vehicle id="E2W70" type="standard_car" route="E2W" depart="101.94029411065186" departLane="random" departSpeed="10" />
+<vehicle id="W2E71" type="standard_car" route="W2E" depart="102.23683287777499" departLane="random" departSpeed="10" />
+<vehicle id="S2N72" type="standard_car" route="S2N" depart="103.56937319428778" departLane="random" departSpeed="10" />
+<vehicle id="N2S73" type="standard_car" route="N2S" depart="103.68423492255889" departLane="random" departSpeed="10" />
+<vehicle id="S2N74" type="standard_car" route="S2N" depart="104.67078310944393" departLane="random" departSpeed="10" />
+<vehicle id="S2N75" type="standard_car" route="S2N" depart="105.84535890337763" departLane="random" departSpeed="10" />
+<vehicle id="W2E76" type="standard_car" route="W2E" depart="107.10015755858899" departLane="random" departSpeed="10" />
+<vehicle id="E2W77" type="standard_car" route="E2W" depart="111.23448774945854" departLane="random" departSpeed="10" />
+<vehicle id="W2N78" type="standard_car" route="W2N" depart="111.3234155194736" departLane="random" departSpeed="10" />
+<vehicle id="E2N79" type="standard_car" route="E2N" depart="112.01921162890622" departLane="random" departSpeed="10" />
+<vehicle id="E2W80" type="standard_car" route="E2W" depart="114.86351939462666" departLane="random" departSpeed="10" />
+<vehicle id="N2S81" type="standard_car" route="N2S" depart="117.00293937322827" departLane="random" departSpeed="10" />
+<vehicle id="N2W82" type="standard_car" route="N2W" depart="123.43086895017599" departLane="random" departSpeed="10" />
+<vehicle id="N2S83" type="standard_car" route="N2S" depart="131.10720556689122" departLane="random" departSpeed="10" />
+<vehicle id="N2S84" type="standard_car" route="N2S" depart="133.52434502001793" departLane="random" departSpeed="10" />
+<vehicle id="N2S85" type="standard_car" route="N2S" depart="135.97618822019405" departLane="random" departSpeed="10" />
+<vehicle id="N2S86" type="standard_car" route="N2S" depart="136.28749978799527" departLane="random" departSpeed="10" />
+<vehicle id="W2E87" type="standard_car" route="W2E" depart="145.81088239934863" departLane="random" departSpeed="10" />
+<vehicle id="E2W88" type="standard_car" route="E2W" depart="149.19853568079486" departLane="random" departSpeed="10" />
+<vehicle id="W2E89" type="standard_car" route="W2E" depart="151.20151001970817" departLane="random" departSpeed="10" />
+<vehicle id="S2N90" type="standard_car" route="S2N" depart="153.70109750693" departLane="random" departSpeed="10" />
+<vehicle id="N2E91" type="standard_car" route="N2E" depart="155.1424090331372" departLane="random" departSpeed="10" />
+<vehicle id="W2S92" type="standard_car" route="W2S" depart="156.25969545169883" departLane="random" departSpeed="10" />
+<vehicle id="W2E93" type="standard_car" route="W2E" depart="156.27794153927744" departLane="random" departSpeed="10" />
+<vehicle id="W2E94" type="standard_car" route="W2E" depart="168.1078574557929" departLane="random" departSpeed="10" />
+<vehicle id="N2S95" type="standard_car" route="N2S" depart="197.17218930470239" departLane="random" departSpeed="10" />
+<vehicle id="E2W96" type="standard_car" route="E2W" depart="200.0" departLane="random" departSpeed="10" />
+>>>>>>> 9bd8b96e19d33ad0763f89bc55f1e69442af59cb
 </routes>
