@@ -8,11 +8,13 @@ class CrossIntersection():
     # funktion: skift lys (tager id på lyskryds som input)
     # funktion: skift til action nr. (tager action nr. som input) - bruger skift lys funktion
 
-    def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight):
+    def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning):
         self.sumo_path = 'sumo_files/osm.sumocfg'
         self.sumo_mode = sumo_mode
         self.max_step = max_step
         self.percentage_straight = percentage_straight
+        self.car_intensity_per_min = car_intensity_per_min
+        self.spredning = spredning
 
         self.min_green_phase_steps = min_green_phase_steps
         self.yellow_phase_steps = yellow_phase_steps
@@ -38,15 +40,15 @@ class CrossIntersection():
         
 
     def run_env(self):
-        self.route_generate(self.max_step, self.percentage_straight)
+        self.route_generate(self.max_step, self.percentage_straight, self.car_intensity_per_min, self.spredning)
         traci.start([self.sumo_mode, "-c", self.sumo_path])
         self._set_phases()
 
-    def route_generate(self, max_step, percentage_straight): 
+    def route_generate(self, max_step, percentage_straight, car_intensity_per_min, spredning): 
         #Anvend ved kontrol: seed. 
         
         #Antal biler: 
-        n_cars = np.random.normal(max_step/60*33.33,15)
+        n_cars = np.random.normal(max_step/60*car_intensity_per_min,spredning)
 
         #Hvilken fordeling anvendes til bilernes tider? 
         tider = np.random.weibull(2, int(n_cars))

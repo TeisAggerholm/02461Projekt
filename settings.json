@@ -2,7 +2,10 @@
     "simulation":{
         "sumo_mode": "sumo-gui",
         "max_step": 200,
-        "percentage_straight": 0.75
+        "percentage_straight": 0.75, 
+        "car_intensity_per_min": 30, 
+        "spredning": 15
+
     },
     "environment":{
         "name": "CrossIntersection",
