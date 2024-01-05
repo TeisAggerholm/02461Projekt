@@ -21,9 +21,14 @@ class Simulation:
 
         while self._currentStep < self.max_step:
             # Model + Environment
-            state = {"currentStep": self._currentStep}
+
+            state_description = {
+                "currentStep": self._currentStep,
+                "statistics": self._get_vehicle_stats()
+            }
+
             # state = self._environment.get_state()
-            action = self._model.choose_action(state)
+            action = self._model.choose_action(state_description)
 
             if old_action == -1:
                 steps_to_do_green_phase = self._environment.set_green_phase(action)
@@ -70,7 +75,8 @@ class Simulation:
             vehicle_waiting_times.append(self.get_waiting_time(vehicle))
             self.co2_emission += self.get_co2_emission(vehicle)
             self.sum_queue = sum(self.get_queue_length())
-        return vehicle_waiting_times, self.co2_emission, self.get_queue_length()
+        
+        return {"wait_times": vehicle_waiting_times, "total_co2": self.co2_emission, "queues": self.get_queue_length()}
 
     def set_stats(self):
         self.stats["total_waiting_time"] = sum(self.waiting_times.values())

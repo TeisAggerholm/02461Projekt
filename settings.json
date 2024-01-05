@@ -1,7 +1,7 @@
 {
     "simulation":{
-        "sumo_mode": "sumo",
-        "max_step": 100,
+        "sumo_mode": "sumo-gui",
+        "max_step": 500,
         "percentage_straight": 1,
         "total_score_weight_factors":{
             "total_waiting_time": 1,
@@ -16,15 +16,13 @@
     },
     "environment":{
         "name": "CrossIntersection",
-        "min_green_phase_steps": 20,
-        "yellow_phase_steps": 5,
-        "red_phase_steps": 5
+        "min_green_phase_steps": 10,
+        "yellow_phase_steps": 2,
+        "red_phase_steps": 2
     },
     "model":{
-      "name": "Interval_model",
-      "gamma": 0.75,
-      "epsilon": 0.9,
-      "*args": [100]
+      "name": "DQN",
+      "*args": [6, 124]
     }
     
 }
