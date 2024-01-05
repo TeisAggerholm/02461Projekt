@@ -12,6 +12,7 @@ percentage_straight = settings["simulation"]["percentage_straight"]
 min_green_phase_steps = settings["environment"]["min_green_phase_steps"]
 yellow_phase_steps = settings["environment"]["yellow_phase_steps"]
 red_phase_steps = settings["environment"]["red_phase_steps"]
+final_score_weights = settings["simulation"]["total_score_weight_factors"]
 
 # Environment
 environment_name = settings['environment']['name']
@@ -26,6 +27,9 @@ model = model_class(environment.num_actions, *model_args)
 
 # Simulation
 generator(max_step).route_generator(percentage_straight)
-simulation = Simulation(max_step, environment, model)
+simulation = Simulation(max_step, environment, model, final_score_weights)
 simulation.run()
+
+
 print('-------VORES REGNEDE STATS-------:', simulation.stats)
+print('overall score', simulation.calc_overall_score())

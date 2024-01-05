@@ -2,7 +2,7 @@ import traci
 import os
 
 class Simulation:
-    def __init__(self, max_step, _environment, _model):
+    def __init__(self, max_step, _environment, _model, final_score_weights):
         self.max_step = max_step
         self._environment = _environment
         self._model = _model
@@ -11,6 +11,7 @@ class Simulation:
         self.co2_emission = 0
         self.waiting_times = {}
         self.stats = {}
+        self.final_score_weights = final_score_weights
 
     def run(self):
         self._environment.run_env()
@@ -107,7 +108,11 @@ class Simulation:
             if value != 0:
                 halting_count += 1
         return total_vehicle_count, halting_count
-
+    
+    def calc_overall_score(self):
+        overall_score = self.final_score_weights["total_waiting_time"] * self.stats["total_waiting_time"]
+        return overall_score
+        
 if __name__ == '__main__':
     import sys
     import os
@@ -120,3 +125,4 @@ if __name__ == '__main__':
     print("These are the total stats of the run")
     simulation.run()
     print(simulation.stats)
+    print(simulation.calc_overall_score())
