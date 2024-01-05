@@ -57,7 +57,7 @@ class Simulation:
 
         while steps_to_do > 0:
             traci.simulationStep()  # simulate 1 step in sumo
-            print(self._get_vehicle_stats())
+            self._get_vehicle_stats()
             self._currentStep += 1 # update the step counter
             steps_to_do -= 1
 
