@@ -42,13 +42,6 @@ class Simulation:
             else:
                 self._run_steps(1)
             
-            # STATS
-            vehicles = traci.vehicle.getIDList()
-            for vehicle in vehicles:
-                self.get_waiting_time(vehicle)
-                self.co2_emission += self.get_co2_emission(vehicle)
-                self.sum_queue += sum(self.get_queue_length())
-
             # UPDATE
             
             old_action = action
@@ -63,8 +56,18 @@ class Simulation:
 
         while steps_to_do > 0:
             traci.simulationStep()  # simulate 1 step in sumo
+            self._get_vehicle_stats()
             self._currentStep += 1 # update the step counter
             steps_to_do -= 1
+
+    def _get_vehicle_stats(self):
+        # STATS
+        vehicles = traci.vehicle.getIDList()
+        for vehicle in vehicles:
+            self.get_waiting_time(vehicle)
+            self.co2_emission += self.get_co2_emission(vehicle)
+            self.sum_queue += sum(self.get_queue_length())
+
 
     def set_stats(self):
         self.stats["total_waiting_time"] = sum(self.waiting_times.values())
