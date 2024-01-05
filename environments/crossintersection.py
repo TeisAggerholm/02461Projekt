@@ -63,7 +63,7 @@ class CrossIntersection():
             print("""<?xml version="1.0" encoding="UTF-8"?>
 
             <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                  
+   
             <vType accel="1.0" decel="4.5" id="standard_car" length="5.0" minGap="2.5" maxSpeed="25" sigma="0.5" />) 
             
             <route id="N2W" edges="-125514711 125514713"/>
