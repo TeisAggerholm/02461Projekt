@@ -56,18 +56,20 @@ class Simulation:
 
         while steps_to_do > 0:
             traci.simulationStep()  # simulate 1 step in sumo
-            self._get_vehicle_stats()
+            print(self._get_vehicle_stats())
             self._currentStep += 1 # update the step counter
             steps_to_do -= 1
 
     def _get_vehicle_stats(self):
         # STATS
         vehicles = traci.vehicle.getIDList()
-        for vehicle in vehicles:
-            self.get_waiting_time(vehicle)
-            self.co2_emission += self.get_co2_emission(vehicle)
-            self.sum_queue += sum(self.get_queue_length())
+        vehicle_waiting_times = []
 
+        for vehicle in vehicles:
+            vehicle_waiting_times.append(self.get_waiting_time(vehicle))
+            self.co2_emission += self.get_co2_emission(vehicle)
+
+        return vehicle_waiting_times, self.co2_emission, self.get_queue_length()
 
     def set_stats(self):
         self.stats["total_waiting_time"] = sum(self.waiting_times.values())
@@ -89,6 +91,8 @@ class Simulation:
         self.vehicle = vehicle
         wait_time = traci.vehicle.getAccumulatedWaitingTime(self.vehicle)
         self.waiting_times[self.vehicle] = wait_time
+
+        return wait_time
      
     def get_co2_emission(self,vehicle):
         self.vehicle = vehicle
