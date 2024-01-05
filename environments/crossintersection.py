@@ -22,11 +22,11 @@ class CrossIntersection():
         }
 
         self.phases = [
-            traci.trafficlight.Phase(10, "rrrrGGggrrrrGGgg"), # NS green phase
-            traci.trafficlight.Phase(2, "rrrryyyyrrrryyyy"), # NS yellow phase
-            traci.trafficlight.Phase(2, "rrrrrrrrrrrrrrrr"), # all red phase
-            traci.trafficlight.Phase(10, "GGggrrrrGGggrrrr"), # EW green phase
-            traci.trafficlight.Phase(2, "yyyyrrrryyyyrrrr"), # EW yellow phase
+            traci.trafficlight.Phase(10000, "rrrrGGggrrrrGGgg"), # NS green phase
+            traci.trafficlight.Phase(10000, "rrrryyyyrrrryyyy"), # NS yellow phase
+            traci.trafficlight.Phase(10000, "rrrrrrrrrrrrrrrr"), # all red phase
+            traci.trafficlight.Phase(10000, "GGggrrrrGGggrrrr"), # EW green phase
+            traci.trafficlight.Phase(10000, "yyyyrrrryyyyrrrr"), # EW yellow phase
         ]
 
         self.lane = ["-125514713_0", "-125514711_0", "-548975769_0", "125514709_0"]
@@ -54,7 +54,7 @@ class CrossIntersection():
         )
 
         traci.trafficlight.setCompleteRedYellowGreenDefinition(self.traffic_light_system_id, logic)
-  
+
     def set_yellow_phase(self, action):
         phase_index = self.actions_def[action]['yellow_phase_index']
         traci.trafficlight.setPhase(self.traffic_light_system_id, phase_index)
