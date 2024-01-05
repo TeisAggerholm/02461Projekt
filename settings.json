@@ -1,8 +1,15 @@
 {
     "simulation":{
-        "sumo_mode": "sumo-gui",
-        "max_step": 500,
-        "percentage_straight": 0.2
+        "sumo_mode": "sumo",
+        "max_step": 100,
+        "percentage_straight": 1,
+        "total_score_weight_factors":{
+            "total_waiting_time": 1,
+            "halting_vehicle_count": 1,
+            "co2_emission_total": 1,
+            "avg_queue_length": 1,
+            "avg_wait_time": 1
+        }
     },
     "environment":{
         "name": "CrossIntersection",
@@ -14,6 +21,7 @@
       "name": "Interval_model",
       "gamma": 0.75,
       "epsilon": 0.9,
-      "*args": [40]
+      "*args": [100]
     }
+    
 }
