@@ -1,7 +1,8 @@
 {
     "simulation":{
         "sumo_mode": "sumo",
-        "max_step": 200
+        "max_step": 200,
+        "percentage_straight": 0.75
     },
     "environment":{
         "name": "CrossIntersection",

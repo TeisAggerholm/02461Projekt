@@ -1,12 +1,14 @@
 import importlib
 import utils
 from support.simulation import Simulation
+from support.route_generator import generator
 
 settings = utils.read_settings('settings.json')
 
 # Params
 sumo_mode = settings["simulation"]["sumo_mode"]
 max_step = settings["simulation"]["max_step"]
+percentage_straight = settings["simulation"]["percentage_straight"]
 min_green_phase_steps = settings["environment"]["min_green_phase_steps"]
 yellow_phase_steps = settings["environment"]["yellow_phase_steps"]
 red_phase_steps = settings["environment"]["red_phase_steps"]
@@ -23,6 +25,7 @@ model_class = getattr(importlib.import_module(f'models.{model_name.lower()}'), m
 model = model_class(environment.num_actions, *model_args)
 
 # Simulation
+generator(max_step).route_generator(percentage_straight)
 simulation = Simulation(max_step, environment, model)
 simulation.run()
 print('-------VORES REGNEDE STATS-------:', simulation.stats)

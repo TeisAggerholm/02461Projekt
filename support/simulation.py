@@ -71,7 +71,7 @@ class Simulation:
         self.stats["halting_vehicle_count"] = self.count_halting_vehicles()[1]
         self.stats["co2_emission_total"] = round(self.co2_emission/1000)
         self.stats["avg_queue_length"] = self.sum_queue/self.max_step
-        self.stats["avg_wait_time"] = self.stats["total_waiting_time"]/self.count_halting_vehicles()[0]
+        self.stats["avg_wait_time"] = round(self.stats["total_waiting_time"]/self.count_halting_vehicles()[0],2)
         self.stats["vehicle_count"] = self.count_halting_vehicles()[0]
 
     def get_queue_length(self): 
