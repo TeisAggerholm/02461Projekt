@@ -1,7 +1,6 @@
 import importlib
 import utils
 from support.simulation import Simulation
-from support.route_generator import generator
 
 settings = utils.read_settings('settings.json')
 
@@ -29,7 +28,6 @@ model_class = getattr(importlib.import_module(f'models.{model_name.lower()}'), m
 model = model_class(environment.num_actions, *model_args)
 
 # Simulation
-generator(max_step).route_generator(percentage_straight)
 simulation = Simulation(max_step, environment, model, final_score_weights)
 simulation.run()
 
