@@ -69,7 +69,7 @@ class Simulation:
         for vehicle in vehicles:
             vehicle_waiting_times.append(self.get_waiting_time(vehicle))
             self.co2_emission += self.get_co2_emission(vehicle)
-
+            self.sum_queue = sum(self.get_queue_length())
         return vehicle_waiting_times, self.co2_emission, self.get_queue_length()
 
     def set_stats(self):
