@@ -10,6 +10,7 @@ class CrossIntersection():
 
     def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning):
         self.sumo_path = 'sumo_files/osm.sumocfg'
+        self.net_path = "sumo_files/osm.netccfg"
         self.sumo_mode = sumo_mode
         self.max_step = max_step
         self.percentage_straight = percentage_straight
@@ -46,7 +47,7 @@ class CrossIntersection():
 
     def route_generate(self, max_step, percentage_straight, car_intensity_per_min, spredning): 
         #Anvend ved kontrol: seed. 
-        
+
         #Antal biler: 
         n_cars = np.random.normal(max_step/60*car_intensity_per_min,spredning)
 
@@ -59,12 +60,13 @@ class CrossIntersection():
         for tid in tider: 
             new_times.append(tid / tider[-1] * max_step)
 
-
+        #Getting the map url: 
+        url = self.get_map_url()
 
         with open("sumo_files/osm.passenger.trips.xml", "w") as routes:
-            print("""<?xml version="1.0" encoding="UTF-8"?>
+            print(f"""<?xml version="1.0" encoding="UTF-8"?>
 
-            <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <routes xmlns:xsi="{url}">
    
             <vType accel="1.0" decel="4.5" id="standard_car" length="5.0" minGap="2.5" maxSpeed="25" sigma="0.5" />) 
             
@@ -116,7 +118,20 @@ class CrossIntersection():
                 print(f'<vehicle id="{route}{car}" type="standard_car" route="{route}" depart="{departure}" departLane="random" departSpeed="10" />', file=routes)
 
             print("</routes>", file=routes)
-        
+    
+    def get_map_url(self): 
+        import re
+        pattern = r'xmlns:xsi="([^"]+)"'
+
+        with open(self.net_path, "r") as file:
+            for line in file: 
+                if "configuration xmlns:xsi=" in line: 
+                    match = re.search(pattern, line)
+                    if match:
+                        xsi_link = match.group(1)
+                        return xsi_link
+                    else:
+                        raise ValueError(f"Failed to extract xsi_link from link{self.net_path}")
 
     def _get_phases(self):
         tls_definitions = traci.trafficlight.getCompleteRedYellowGreenDefinition(self.traffic_light_system_id)
