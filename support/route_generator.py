@@ -74,4 +74,3 @@ class generator:
 
             print("</routes>", file=routes)
 
-generator(200).route_generator(0.75)
