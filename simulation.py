@@ -1,5 +1,6 @@
 import traci
 import os
+from models.dqn import Memory, Experience
 
 class Simulation:
     def __init__(self, max_step, _environment, _model, final_score_weights, episodes):
@@ -13,48 +14,62 @@ class Simulation:
         self.waiting_times = {}
         self.stats = {}
         self.final_score_weights = final_score_weights
+        self.memory = Memory(1000)
+        self.overall_reward = 0
 
     def run(self):
         self._environment.run_env()
         old_action = -1
 
+        previous = {"state_list": 0, "action": 0, "reward": 0}
+
         while self._currentStep < self.max_step:
-            # Model + Environment
+            state_list = self.get_queue_length()
+            
+            #ADD TO MEMORY
+            if old_action == 0 or old_action == 1:
+                exp = (previous["state_list"], previous["action"], previous["reward"], state_list)
+                self.memory.add_experience(exp)
 
-            state_description = {
-                "currentStep": self._currentStep,
-                "statistics": self._get_vehicle_stats()
-            }
 
-            # state = self._environment.get_state()
-            action = self._model.choose_action(state_description)
+            action = self._model.choose_action(state_list)
 
-            if old_action == -1:
-                steps_to_do_green_phase = self._environment.set_green_phase(action)
-                self._run_steps(steps_to_do_green_phase)
-            elif action != old_action:
-                steps_to_do_yellow_phase_1 = self._environment.set_yellow_phase(old_action)
-                self._run_steps(steps_to_do_yellow_phase_1)
+            # if old_action == -1:
+            #     steps_to_do_green_phase = self._environment.set_green_phase(action)
+            #     self._run_steps(steps_to_do_green_phase)
+            # elif action != old_action:
+            #     steps_to_do_yellow_phase_1 = self._environment.set_yellow_phase(old_action)
+            #     self._run_steps(steps_to_do_yellow_phase_1)
 
-                steps_to_do_red_phase = self._environment.set_red_phase()
-                self._run_steps(steps_to_do_red_phase)
+            #     steps_to_do_red_phase = self._environment.set_red_phase()
+            #     self._run_steps(steps_to_do_red_phase)
 
-                steps_to_do_yellow_phase_2 = self._environment.set_yellow_phase(action)
-                self._run_steps(steps_to_do_yellow_phase_2)
+            #     steps_to_do_yellow_phase_2 = self._environment.set_yellow_phase(action)
+            #     self._run_steps(steps_to_do_yellow_phase_2)
 
-                steps_to_do_green_phase = self._environment.set_green_phase(action)
-                self._run_steps(steps_to_do_green_phase)
-            else:
-                self._run_steps(1)
+            #     steps_to_do_green_phase = self._environment.set_green_phase(action)
+            #     self._run_steps(steps_to_do_green_phase)
+
+            self._run_steps(1)
+            
             
             # UPDATE
+            reward = - sum(self.get_queue_length())
+            self.overall_reward -= sum(self.get_queue_length())
+
+            previous["state_list"] = state_list
+            previous["action"] = action
+            previous["reward"] = reward
             
             old_action = action
+            
+            if len(self.memory._experiences) > 10:
+                batch = self.memory.get_batch(10)
+                self._model.train(batch)
 
         self.set_stats()
         traci.close()
-        
-
+         
     def _run_steps(self, steps_to_do):
 
         if(self._currentStep + steps_to_do) >= self.max_step:
@@ -118,7 +133,18 @@ class Simulation:
     def calc_overall_score(self):
         overall_score = self.final_score_weights["total_waiting_time"] * self.stats["total_waiting_time"]
         return overall_score
-        
+    
+
+
+
+
+class Stats:
+    def __init__(self):
+        pass
+
+    def isHalted(self, vehicle_id):
+        return traci.vehicle.getSpeed(vehicle_id) < 0.1 # speed under 0.1
+     
 if __name__ == '__main__':
     import sys
     import os
