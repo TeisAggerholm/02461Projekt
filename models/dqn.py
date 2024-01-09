@@ -39,6 +39,7 @@ class DQN(nn.Module):
         self.epsilon = 1
         self.epsilon_decrease = epsilon_decrease
         self.gamma = gamma
+        self.learning_rate = 0.0001
 
         self.num_actions = num_actions
         action_dim = num_actions
@@ -47,9 +48,14 @@ class DQN(nn.Module):
         self.net = nn.Sequential(
             nn.Linear(state_dim, hidden_dim), 
             nn.ReLU(), 
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(), 
             nn.Linear(hidden_dim, action_dim),
         )
         
+        self.optimizer = torch.optim.Adam(self.net.parameters(), lr=self.learning_rate)
+        self.loss_function = torch.nn.MSELoss()
+
     def forward(self, state):
         return self.net(state)
 
@@ -69,6 +75,15 @@ class DQN(nn.Module):
 
     def train(self, batch):
         pass
+        # index 0 = state_list
+        # batch_array = np.array(batch)
+        # states  = batch_array[:, 0]
+        # #  >> via. list comprehension: states = [sublist[0] for sublist in batch if sublist]
+        # print(states)        
+        # out = self.net(self.convert_to_tensor(states))
+
+        # print(batch)
+        
 
 
 #Loss function 
