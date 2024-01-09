@@ -42,12 +42,13 @@ class DQN(nn.Module):
     def forward(self, state):
         return self.net(state)
 
+
     def choose_action(self, state_description):
         if random.random() < 0.1: 
             action = random.choice(range(self.num_actions))
         else: 
             state = self.convert_to_tensor(state_description["statistics"])
-            action = torch.argmax(self.net(state)).item()        
+            action = torch.argmax(self.net(state)).item()
 
         print("------ACTION------", action)    
         return action
