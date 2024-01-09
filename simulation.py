@@ -2,7 +2,8 @@ import traci
 import os
 
 class Simulation:
-    def __init__(self, max_step, _environment, _model, final_score_weights):
+    def __init__(self, max_step, _environment, _model, final_score_weights, episodes):
+        self.episodes = episodes
         self.max_step = max_step
         self._environment = _environment
         self._model = _model
@@ -16,8 +17,6 @@ class Simulation:
     def run(self):
         self._environment.run_env()
         old_action = -1
-
-        # routes = self._environment.generate_routes()
 
         while self._currentStep < self.max_step:
             # Model + Environment
@@ -54,6 +53,7 @@ class Simulation:
 
         self.set_stats()
         traci.close()
+        
 
     def _run_steps(self, steps_to_do):
 

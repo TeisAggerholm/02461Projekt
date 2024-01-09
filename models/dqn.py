@@ -4,7 +4,6 @@ import torch.optim as optim
 import numpy as np
 import random
 
-
 class Reward:
     def __init__(self, statistics : dict, weights : dict):
         self.statistics = statistics
@@ -25,10 +24,41 @@ class Reward:
     def _convert_queues(self, queues):
         return sum(queues)/len(self.statistics["wait_time"])
 
-class DQN(nn.Module):
-    def __init__(self, num_actions, state_dim, hidden_dim):
-        super(DQN, self).__init__()
+class Memory:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self._experiences = []
+    
+    def add_experience(self, experience):
+        self._experiences.append(experience)
+
+        if len(self._experiences) > self.capacity:
+            self._experiences.pop(0)
+
+    def get_batch(self, batch_size):
+        if len(self._experiences) < batch_size:
+            return None  # Not enough samples to create a batch
+        return random.sample(self._experiences, batch_size)
         
+class Experience:
+    def __init__(self, state, action, reward, next_state):
+        self.state = state 
+        self.action = action
+        self.reward = reward 
+        self.next_state = next_state
+
+# Batch state
+# Batch reward
+# Batch action
+# Batch next state 
+
+class DQN(nn.Module):
+    def __init__(self, num_actions, state_dim, hidden_dim, epsilon_decrease, gamma):
+        super(DQN, self).__init__()
+        self.epsilon = 1
+        self.epsilon_decrease = epsilon_decrease
+        self.gamma = gamma
+
         self.num_actions = num_actions
         action_dim = num_actions
     
@@ -42,7 +72,6 @@ class DQN(nn.Module):
     def forward(self, state):
         return self.net(state)
 
-
     def choose_action(self, state_description):
         if random.random() < 0.1: 
             action = random.choice(range(self.num_actions))
@@ -50,8 +79,8 @@ class DQN(nn.Module):
             state = self.convert_to_tensor(state_description["statistics"])
             action = torch.argmax(self.net(state)).item()
 
-            print("-----TENSOR------", (self.net(state).detach().numpy()))
-        print("------ACTION------", action)    
+            #print("-----TENSOR------", (self.net(state).detach().numpy()))
+        #print("------ACTION------", action)    
         return action
     
     def convert_to_tensor(self, statistics):
@@ -76,3 +105,11 @@ class DQN(nn.Module):
 #Loss function 
 Loss_fn = torch.nn.MSELoss(reduction='sum')
 
+# Reward
+# Loss function
+# Batch, memory læring
+
+# Batch state
+# Batch reward
+# Batch action
+# Batch next state 
