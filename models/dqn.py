@@ -50,6 +50,7 @@ class DQN(nn.Module):
             state = self.convert_to_tensor(state_description["statistics"])
             action = torch.argmax(self.net(state)).item()
 
+            print("-----TENSOR------", (self.net(state).detach().numpy()))
         print("------ACTION------", action)    
         return action
     
