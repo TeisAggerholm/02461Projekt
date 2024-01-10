@@ -19,7 +19,7 @@ final_score_weights = {"total_waiting_time": 1, "halting_vehicle_count": 1,
                        "avg_wait_time": 1}
 car_intensity_per_min = 15
 spredning = 15
-seed = 2
+seed = None
 
 # Environment
 environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning, seed) 
