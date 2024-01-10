@@ -58,8 +58,17 @@ class Simulation:
             self._environment.increment_steps_in_current_phase()
             self._environment.update_current_phase()
 
-            reward = - sum(self.get_queue_length())
-            self.overall_reward -= sum(self.get_queue_length())
+            #REWARD
+            if len(traci.vehicle.getIDList()) == 0: 
+                reward = 0
+            else: 
+                reward = - sum(self.get_queue_length())/len(traci.vehicle.getIDList())
+
+            if sum(self.get_queue_length()) == 0 and 200 >self._currentStep > 40: 
+                reward = 1
+            
+            self.overall_reward += reward
+
             previous["state_list"] = state_list
             previous["action"] = action
             previous["reward"] = reward
