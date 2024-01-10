@@ -61,7 +61,7 @@ for episode in range(episodes):
     plt.title('Overall Reward per Episode')
     plt.xlabel('Episode')
     plt.ylabel('Overall Reward')
-    plt.xlim(1, episode + 2)
+    plt.xlim(1, episode)
     plt.ylim(min(episode_stats) - 10, max(episode_stats) + 10)  # Set the limit for y-axis dynamically
     plt.grid(True)
     plt.draw()
