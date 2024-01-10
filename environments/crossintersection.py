@@ -5,7 +5,7 @@ import random
 
 class CrossIntersection():
 
-    def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning):
+    def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning, route_seed):
         self.sumo_path = 'sumo_files/osm.sumocfg'
         self.net_path = "sumo_files/osm.netccfg"
         self.sumo_mode = sumo_mode
@@ -13,6 +13,7 @@ class CrossIntersection():
         self.percentage_straight = percentage_straight
         self.car_intensity_per_min = car_intensity_per_min
         self.spredning = spredning
+        self.route_seed = route_seed
 
         self.min_green_phase_steps = min_green_phase_steps
         self.yellow_phase_steps = yellow_phase_steps
@@ -44,6 +45,11 @@ class CrossIntersection():
         self._set_phases()
 
     def route_generate(self, max_step, percentage_straight, car_intensity_per_min, spredning): 
+
+        if(self.route_seed):
+            random.seed(self.route_seed)
+            np.random.seed(self.route_seed)
+
         #Anvend ved kontrol: seed. 
 
         #Antal biler: 

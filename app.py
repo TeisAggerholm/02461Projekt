@@ -19,9 +19,10 @@ final_score_weights = {"total_waiting_time": 1, "halting_vehicle_count": 1,
                        "avg_wait_time": 1}
 car_intensity_per_min = 15
 spredning = 15
+seed = 2
 
 # Environment
-environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning) 
+environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning, seed) 
 
 # DQN Model
 input_dim = 4
@@ -60,7 +61,7 @@ for episode in range(episodes):
     plt.title('Overall Reward per Episode')
     plt.xlabel('Episode')
     plt.ylabel('Overall Reward')
-    plt.xlim(1, episodes)  # Set the limit for x-axis
+    plt.xlim(1, episode)
     plt.ylim(min(episode_stats) - 10, max(episode_stats) + 10)  # Set the limit for y-axis dynamically
     plt.grid(True)
     plt.draw()
