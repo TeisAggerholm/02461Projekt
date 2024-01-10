@@ -59,7 +59,7 @@ class DQN(nn.Module):
     def forward(self, state):
         return self.net(state)
 
-    def choose_action(self, state_list):
+    def choose_action(self, state_list, currentStep):
         if random.random() < 0.1: 
             action = random.choice(range(self.num_actions))
         else: 

@@ -4,9 +4,6 @@ import numpy as np
 import random
 
 class CrossIntersection():
-    # funktion: _get_state
-    # funktion: skift lys (tager id på lyskryds som input)
-    # funktion: skift til action nr. (tager action nr. som input) - bruger skift lys funktion
 
     def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning):
         self.sumo_path = 'sumo_files/osm.sumocfg'
@@ -22,7 +19,6 @@ class CrossIntersection():
         self.red_phase_steps = red_phase_steps
 
         self.num_actions = 2
-
         self.actions_def = {
             0: {'green_phase_index': 0, 'yellow_phase_index': 1},
             1: {'green_phase_index': 3, 'yellow_phase_index': 4}
@@ -38,7 +34,9 @@ class CrossIntersection():
 
         self.lane = ["-125514713_0", "-125514711_0", "-548975769_0", "125514709_0"]
         self.traffic_light_system_id = "24960712"
-        
+
+        self.phaseQueue = []
+        self.steps_in_current_phase = 0
 
     def run_env(self):
         self.route_generate(self.max_step, self.percentage_straight, self.car_intensity_per_min, self.spredning)
@@ -151,54 +149,21 @@ class CrossIntersection():
 
         traci.trafficlight.setCompleteRedYellowGreenDefinition(self.traffic_light_system_id, logic)
 
-    def set_yellow_phase(self, action):
+    def push_yellow_phase(self, action):
         phase_index = self.actions_def[action]['yellow_phase_index']
-        traci.trafficlight.setPhase(self.traffic_light_system_id, phase_index)
+        self.phaseQueue.append({"phase_index": phase_index, "steps_to_do": self.yellow_phase_steps})
 
-        return self.yellow_phase_steps
-
-    def set_red_phase(self):
+    def push_red_phase(self):
         phase_index = 2
-        traci.trafficlight.setPhase(self.traffic_light_system_id, phase_index)
-        return self.red_phase_steps
+        self.phaseQueue.append({"phase_index": phase_index, "steps_to_do": self.red_phase_steps})
 
-    def set_green_phase(self, action):
+    def push_green_phase(self, action):
         phase_index = self.actions_def[action]['green_phase_index']
-        traci.trafficlight.setPhase(self.traffic_light_system_id, phase_index)
+        self.phaseQueue.append({"phase_index": phase_index, "steps_to_do": self.min_green_phase_steps})
 
-        return self.min_green_phase_steps
-
-    # def set_green_phase(self, action_number):
-    #     """
-    #     Activate the correct green light combination in sumo
-    #     """
-    #     if action_number == 0:
-    #         traci.trafficlight.setPhase("TL", PHASE_NS_GREEN)
-    #     elif action_number == 1:
-    #         traci.trafficlight.setPhase("TL", PHASE_NSL_GREEN)
-    #     elif action_number == 2:
-    #         traci.trafficlight.setPhase("TL", PHASE_EW_GREEN)
-    #     elif action_number == 3:
-    #         traci.trafficlight.setPhase("TL", PHASE_EWL_GREEN)
-
-
-
-    # def _get_state(self):
-    #     # Determine which lanes are occupied
-    #     occupied_lanes = []
-    #     for lane in self.lane:
-    #         if traci.edge.getLastStepHaltingNumber(lane) > 0:
-    #             occupied_lanes.append(lane)
-
-    #     # Represent the state as a binary number (0 or 1)
-    #     if occupied_lanes == ["lane:-125514711_0", "lane:125514709_0"]:
-    #         state = 0  # North-south advance state
-    #     elif occupied_lanes == ["lane:-125514713_0", "lane:-548975769_0"]:
-    #         state = 1  # West-east advance state
-    #     else:
-    #         state = None  # Invalid state
-
-    #     return state
+    def isActionable(self):
+        if len(self.phaseQueue) == 0:
+            return True
 
     def get_traffic_light_state(self):
 
@@ -220,6 +185,50 @@ class CrossIntersection():
         
         return light_states
 
+    def increment_steps_in_current_phase(self):
+        if len(self.phaseQueue) > 0:
+            self.steps_in_current_phase += 1     
+    
+    def update_current_phase(self):
+        if len(self.phaseQueue) > 0:
+            current_phase = self.phaseQueue[0]
+            if current_phase["steps_to_do"] == self.steps_in_current_phase:
+                self.phaseQueue.pop(0)
+                self.steps_in_current_phase = 0
+        
+    def set_lights(self):
+        if len(self.phaseQueue) > 0:
+            traci.trafficlight.setPhase(self.traffic_light_system_id, self.phaseQueue[0]["phase_index"])
+    
+
+
+
+        # if len(self.phaseQueue) > 0:
+        #     pastPhase = self.phaseQueue[0]
+        #     self.steps_in_current_phase += 1
+
+        #     if pastPhase["steps_to_do"] < self.steps_in_current_phase:
+        #         self.phaseQueue.pop()
+        #         self.steps_in_current_phase = 0
+
+        #     print(self.steps_in_current_phase)  
+
+        #     if len(self.phaseQueue) > 0:
+        #         activated_phase_index = traci.trafficlight.getPhase(self.traffic_light_system_id)
+        #         currentPhase = self.phaseQueue[0]
+
+        #         if activated_phase_index != currentPhase["phase_index"]:
+        #             traci.trafficlight.setPhase(self.traffic_light_system_id, currentPhase["phase_index"])
+
+        #     # self.steps_in_current_phase = 0
+        #     # self.steps_in_current_phase += 1
+
+        #     # activated_phase_index = traci.trafficlight.getPhase(self.traffic_light_system_id)
+        #     # currentPhase = self.phaseQueue[0]
+
+        #     # if activated_phase_index != currentPhase["phase_index"]:
+        #     #     print(currentPhase["phase_index"])
+        #     #     traci.trafficlight.setPhase(self.traffic_light_system_id, currentPhase["phase_index"])
 
 if __name__ == '__main__':
     sumo_config_path = 'sumo_files/osm.sumocfg'

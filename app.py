@@ -6,7 +6,7 @@ from models.interval_model import Interval_model
 from models.dqn import DQN
 
 # Params
-sumo_mode = "sumo"
+sumo_mode = "sumo-gui"
 max_step = 300
 percentage_straight = 0.5
 min_green_phase_steps = 10
@@ -21,12 +21,16 @@ spredning = 15
 # Environment
 environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning) 
 
-# Model
+# DQN Model
 input_dim = 4
 hidden_dim = 124
 epsilon_decrease = 0.1**(1/1000) # 0.1 fjernes hver 1000 gang.
 gamma = 0.99
-model = DQN(environment.num_actions, input_dim, hidden_dim, epsilon_decrease, gamma)
+# model = DQN(environment.num_actions, input_dim, hidden_dim, epsilon_decrease, gamma)
+
+# Interval_model
+interval = 15
+model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
 episodes = 1

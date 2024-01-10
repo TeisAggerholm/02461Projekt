@@ -20,6 +20,7 @@ class Simulation:
     def run(self):
         self._environment.run_env()
         old_action = -1
+        last_executed_action = -1
 
         previous = {"state_list": 0, "action": 0, "reward": 0}
 
@@ -27,60 +28,49 @@ class Simulation:
             state_list = self.get_queue_length()
             
             #ADD TO MEMORY
-            if old_action == 0 or old_action == 1:
+            if old_action != -1:
                 exp = (previous["state_list"], previous["action"], previous["reward"], state_list)
                 self.memory.add_experience(exp)
 
 
-            action = self._model.choose_action(state_list)
-
-            # if old_action == -1:
-            #     steps_to_do_green_phase = self._environment.set_green_phase(action)
-            #     self._run_steps(steps_to_do_green_phase)
-            # elif action != old_action:
-            #     steps_to_do_yellow_phase_1 = self._environment.set_yellow_phase(old_action)
-            #     self._run_steps(steps_to_do_yellow_phase_1)
-
-            #     steps_to_do_red_phase = self._environment.set_red_phase()
-            #     self._run_steps(steps_to_do_red_phase)
-
-            #     steps_to_do_yellow_phase_2 = self._environment.set_yellow_phase(action)
-            #     self._run_steps(steps_to_do_yellow_phase_2)
-
-            #     steps_to_do_green_phase = self._environment.set_green_phase(action)
-            #     self._run_steps(steps_to_do_green_phase)
-
-            self._run_steps(1)
+            # Action
+            action = self._model.choose_action(state_list, self._currentStep)
+            isActionable = self._environment.isActionable()
             
+            if isActionable:
+                if last_executed_action == -1:
+                    self._environment.push_green_phase(action)
+                    last_executed_action = action
+
+                elif action != last_executed_action:
+                    self._environment.push_yellow_phase(last_executed_action)
+                    self._environment.push_red_phase()
+                    self._environment.push_yellow_phase(action)
+                    self._environment.push_green_phase(action)
+                    last_executed_action = action
+
             
-            # UPDATE
+            # UPDATE        
+            self._environment.set_lights()
+            traci.simulationStep()    
+            self._currentStep += 1     
+            self._environment.increment_steps_in_current_phase()
+            self._environment.update_current_phase()
+
             reward = - sum(self.get_queue_length())
             self.overall_reward -= sum(self.get_queue_length())
-
             previous["state_list"] = state_list
             previous["action"] = action
             previous["reward"] = reward
-            
             old_action = action
             
+            # Train
             if len(self.memory._experiences) > 10:
                 batch = self.memory.get_batch(10)
                 self._model.train(batch)
 
-        self.set_stats()
         traci.close()
          
-    def _run_steps(self, steps_to_do):
-
-        if(self._currentStep + steps_to_do) >= self.max_step:
-            steps_to_do = self.max_step - self._currentStep # do not do more steps than the maximum allowed number of steps
-
-        while steps_to_do > 0:
-            traci.simulationStep()  # simulate 1 step in sumo
-            self._get_vehicle_stats()
-            self._currentStep += 1 # update the step counter
-            steps_to_do -= 1
-
     def _get_vehicle_stats(self):
         # STATS
         vehicles = traci.vehicle.getIDList()
@@ -134,9 +124,6 @@ class Simulation:
         overall_score = self.final_score_weights["total_waiting_time"] * self.stats["total_waiting_time"]
         return overall_score
     
-
-
-
 
 class Stats:
     def __init__(self):
