@@ -66,23 +66,37 @@ class DQN(nn.Module):
             state = self.convert_to_tensor(state_list)
             action = torch.argmax(self.net(state)).item()
 
-            print("-----TENSOR------", (self.net(state).detach().numpy()))
-        print("------ACTION------", action)    
+        #     print("-----TENSOR------", (self.net(state).detach().numpy()))
+        # print("------ACTION------", action)    
         return action
     
     def convert_to_tensor(self, state_list):
         return torch.Tensor(state_list)
 
     def train(self, batch):
-        pass
-        # index 0 = state_list
-        # batch_array = np.array(batch)
-        # states  = batch_array[:, 0]
-        # #  >> via. list comprehension: states = [sublist[0] for sublist in batch if sublist]
-        # print(states)        
-        # out = self.net(self.convert_to_tensor(states))
+        if batch is None:
+            return None
+        
+        obs_buffer, action_buffer, reward_buffer, obs_next_buffer, done_buffer = zip(*batch)
 
-        # print(batch)
+        states = torch.Tensor(obs_buffer)
+        actions = torch.LongTensor(action_buffer)
+        rewards = torch.Tensor(reward_buffer)
+        next_states = torch.Tensor(obs_next_buffer)
+        dones = torch.Tensor(done_buffer)
+        
+        Q_values = self.net(states).gather(1, actions.unsqueeze(1))
+        next_Q_values = self.net(next_states).max(1)[0].detach()
+        target_Q_values = rewards + self.gamma * next_Q_values * (1 - dones)
+        loss = self.loss_function(Q_values, target_Q_values.unsqueeze(1))
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        self.epsilon = max(0.1, self.epsilon - self.epsilon_decrease)
+
+        return loss.item()
         
 
 

@@ -29,7 +29,7 @@ class Simulation:
             
             #ADD TO MEMORY
             if old_action != -1:
-                exp = (previous["state_list"], previous["action"], previous["reward"], state_list)
+                exp = (previous["state_list"], previous["action"], previous["reward"], state_list, 0)
                 self.memory.add_experience(exp)
 
 
