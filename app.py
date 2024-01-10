@@ -3,7 +3,7 @@ import utils
 from simulation import Simulation
 from environments.crossintersection import CrossIntersection
 from models.interval_model import Interval_model
-from models.dqn import DQN
+from models.dqn import DQN, Memory
 import matplotlib.pyplot as plt
 
 
@@ -26,9 +26,10 @@ environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_s
 # DQN Model
 input_dim = 4
 hidden_dim = 124
-epsilon_decrease = 0.1**(1/1000) # 0.1 fjernes hver 1000 gang.
+epsilon_decrease = 0.01**(1/100000) # 0.01 fjernes hver 10000 gang.
 gamma = 0.99
 model = DQN(environment.num_actions, input_dim, hidden_dim, epsilon_decrease, gamma)
+memory = Memory(10000)
 
 # Interval_model
 interval = 15
@@ -46,7 +47,7 @@ plt.ion()  # Turn on interactive mode
 for episode in range(episodes):
     print(f"-----------------------------Simulating episode {episode+1}-----------------------------")
     # Assuming Simulation is defined elsewhere
-    simulation = Simulation(max_step, environment, model, final_score_weights, episodes)
+    simulation = Simulation(max_step, environment, model, final_score_weights, episodes, memory)
     simulation.run()
     print("Overall reward: ", simulation.overall_reward)
     episode_stats.append(simulation.overall_reward)

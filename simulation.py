@@ -3,7 +3,7 @@ import os
 from models.dqn import Memory, Experience
 
 class Simulation:
-    def __init__(self, max_step, _environment, _model, final_score_weights, episodes):
+    def __init__(self, max_step, _environment, _model, final_score_weights, episodes, memory):
         self.episodes = episodes
         self.max_step = max_step
         self._environment = _environment
@@ -14,7 +14,7 @@ class Simulation:
         self.waiting_times = {}
         self.stats = {}
         self.final_score_weights = final_score_weights
-        self.memory = Memory(1000)
+        self.memory = memory
         self.overall_reward = 0
         self.batch_size = 20
 

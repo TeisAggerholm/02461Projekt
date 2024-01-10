@@ -60,13 +60,12 @@ class DQN(nn.Module):
         return self.net(state)
 
     def choose_action(self, state_list, currentStep):
-        if random.random() < 0.1: 
+        if random.random() < self.epsilon: 
             action = random.choice(range(self.num_actions))
         else: 
             state = self.convert_to_tensor(state_list)
             action = torch.argmax(self.net(state)).item()
-
-        #     print("-----TENSOR------", (self.net(state).detach().numpy()))
+        # print("-----TENSOR------", (self.net(state).detach().numpy()))
         # print("------ACTION------", action)    
         return action
     
@@ -94,7 +93,9 @@ class DQN(nn.Module):
         loss.backward()
         self.optimizer.step()
 
-        self.epsilon = max(0.1, self.epsilon - self.epsilon_decrease)
+        self.epsilon = (self.epsilon - 0.1) * self.epsilon_decrease + 0.1
+        print(self.epsilon)
+
 
         return loss.item()
         
