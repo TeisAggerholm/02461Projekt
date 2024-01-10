@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 # Params
-sumo_mode = "sumo-gui"
+sumo_mode = "sumo"
 max_step = 300
 percentage_straight = 0.5
 min_green_phase_steps = 10
@@ -61,7 +61,7 @@ for episode in range(episodes):
     plt.title('Overall Reward per Episode')
     plt.xlabel('Episode')
     plt.ylabel('Overall Reward')
-    plt.xlim(1, episodes)  # Set the limit for x-axis
+    plt.xlim(1, episode + 2)
     plt.ylim(min(episode_stats) - 10, max(episode_stats) + 10)  # Set the limit for y-axis dynamically
     plt.grid(True)
     plt.draw()
