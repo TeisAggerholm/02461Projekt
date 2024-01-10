@@ -16,6 +16,7 @@ class Simulation:
         self.final_score_weights = final_score_weights
         self.memory = Memory(1000)
         self.overall_reward = 0
+        self.batch_size = 20
 
     def run(self):
         self._environment.run_env()
@@ -65,8 +66,8 @@ class Simulation:
             old_action = action
             
             # Train
-            if len(self.memory._experiences) > 10:
-                batch = self.memory.get_batch(10)
+            if len(self.memory._experiences) > self.batch_size and self._currentStep % 10 == 0:
+                batch = self.memory.get_batch(self.batch_size)
                 self._model.train(batch)
 
         traci.close()
