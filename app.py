@@ -37,7 +37,7 @@ interval = 15
 #model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 1000
+episodes = 2
 
 episode_stats = []
 
@@ -66,6 +66,8 @@ for episode in range(episodes):
     plt.grid(True)
     plt.draw()
     plt.pause(0.1)  # Pause to update the plot
+
+model.save_model("First_run")
 
 plt.ioff()  # Turn off interactive mode
 plt.show()  # Show the final plot

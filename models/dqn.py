@@ -36,14 +36,14 @@ class Experience:
 class DQN(nn.Module):
     def __init__(self, num_actions, state_dim, hidden_dim, epsilon_decrease, gamma):
         super(DQN, self).__init__()
-        self.epsilon = 1
+        self.epsilon = 0
         self.epsilon_decrease = epsilon_decrease
         self.gamma = gamma
         self.learning_rate = 0.001
 
         self.num_actions = num_actions
         action_dim = num_actions
-    
+
         # input layer, Activation layer (ReLU), Output layer
         self.net = nn.Sequential(
             nn.Linear(state_dim, hidden_dim), 
@@ -51,8 +51,15 @@ class DQN(nn.Module):
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(), 
             nn.Linear(hidden_dim, action_dim),
+            nn.Softmax()
         )
-        
+        try: 
+            self.load_model("test1.pth")
+            print("----Weights loaded------")
+
+        except FileNotFoundError:
+            print("---- No pretrained model found -----")
+
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=self.learning_rate)
         self.loss_function = torch.nn.MSELoss()
 
@@ -64,7 +71,9 @@ class DQN(nn.Module):
             action = random.choice(range(self.num_actions))
         else: 
             state = self.convert_to_tensor(state_list)
+            print(state)
             action = torch.argmax(self.net(state)).item()
+            print(action)
         # print("-----TENSOR------", (self.net(state).detach().numpy()))
         # print("------ACTION------", action)    
         return action
@@ -82,9 +91,11 @@ class DQN(nn.Module):
         rewards = torch.Tensor(reward_buffer)
         next_states = torch.Tensor(obs_next_buffer)
         dones = torch.Tensor(done_buffer)
-        
-        Q_values = self.net(states).gather(1, actions.unsqueeze(1))
 
+        #State action pair som en vektor til input til det neurale netværk. 
+
+        Q_values = self.net(states).gather(1, actions.unsqueeze(1))
+        
         #Dette gør at der ikke bliver taget gradients af next state.
         with torch.no_grad():
             next_Q_values = self.net(next_states).max(1)[0].detach()
@@ -105,7 +116,11 @@ class DQN(nn.Module):
         self.epsilon = (self.epsilon - 0.1) * self.epsilon_decrease + 0.1
         print("Epsilon: ",self.epsilon)
 
-        
+    def save_model(self, file_name):
+        torch.save(self.state_dict(), file_name)
+    
+    def load_model(self, file_name):
+        self.load_state_dict(torch.load(file_name))
 
 
 #Loss function 
