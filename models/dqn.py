@@ -39,7 +39,7 @@ class DQN(nn.Module):
         self.epsilon = 1
         self.epsilon_decrease = epsilon_decrease
         self.gamma = gamma
-        self.learning_rate = 0.0001
+        self.learning_rate = 0.001
 
         self.num_actions = num_actions
         action_dim = num_actions
@@ -77,7 +77,6 @@ class DQN(nn.Module):
             return None
         
         obs_buffer, action_buffer, reward_buffer, obs_next_buffer, done_buffer = zip(*batch)
-
         states = torch.Tensor(obs_buffer)
         actions = torch.LongTensor(action_buffer)
         rewards = torch.Tensor(reward_buffer)
@@ -85,8 +84,12 @@ class DQN(nn.Module):
         dones = torch.Tensor(done_buffer)
         
         Q_values = self.net(states).gather(1, actions.unsqueeze(1))
-        next_Q_values = self.net(next_states).max(1)[0].detach()
-        target_Q_values = rewards + self.gamma * next_Q_values * (1 - dones)
+
+        #Dette gør at der ikke bliver taget gradients af next state.
+        with torch.no_grad():
+            next_Q_values = self.net(next_states).max(1)[0].detach()
+            target_Q_values = rewards + self.gamma * next_Q_values * (1 - dones)
+        
         loss = self.loss_function(Q_values, target_Q_values.unsqueeze(1))
 
         self.optimizer.zero_grad()
@@ -94,7 +97,7 @@ class DQN(nn.Module):
         self.optimizer.step()
 
         self.epsilon = (self.epsilon - 0.1) * self.epsilon_decrease + 0.1
-        print(self.epsilon)
+        print("Epsilon: ",self.epsilon)
 
 
         return loss.item()
@@ -102,7 +105,7 @@ class DQN(nn.Module):
 
 
 #Loss function 
-Loss_fn = torch.nn.MSELoss(reduction='sum')
+
 
 # Reward
 # Loss function

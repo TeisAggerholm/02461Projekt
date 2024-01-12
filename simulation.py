@@ -1,6 +1,6 @@
 import traci
 import os
-from models.dqn import Memory, Experience
+from models.dqn import Memory, Experience, DQN
 
 class Simulation:
     def __init__(self, max_step, _environment, _model, final_score_weights, episodes, memory):
@@ -16,13 +16,15 @@ class Simulation:
         self.final_score_weights = final_score_weights
         self.memory = memory
         self.overall_reward = 0
-        self.batch_size = 20
+        self.batch_size = 64
+        self._waiting_times = {}
 
     def run(self):
         self._environment.run_env()
         old_action = -1
         last_executed_action = -1
-
+        last_wait = 0
+        
         previous = {"state_list": 0, "action": 0, "reward": 0}
 
         while self._currentStep < self.max_step:
@@ -31,6 +33,7 @@ class Simulation:
             #ADD TO MEMORY
             if old_action != -1:
                 exp = (previous["state_list"], previous["action"], previous["reward"], state_list, 0)
+                #print("State_list", exp) #PRINT FOR STATE_LIST pr STEP
                 self.memory.add_experience(exp)
 
 
@@ -50,22 +53,20 @@ class Simulation:
                     self._environment.push_green_phase(action)
                     last_executed_action = action
 
-            
+            #REWARD
+            reward = -sum(self.get_queue_length())
+
+       #     current_total_wait = self.get_waiting_time()
+      #      reward = last_wait - current_total_wait
+
             # UPDATE        
             self._environment.set_lights()
             traci.simulationStep()    
             self._currentStep += 1     
             self._environment.increment_steps_in_current_phase()
             self._environment.update_current_phase()
+            #last_wait = current_total_wait
 
-            #REWARD
-            if len(traci.vehicle.getIDList()) == 0: 
-                reward = 0
-            else: 
-                reward = - sum(self.get_queue_length())/len(traci.vehicle.getIDList())
-
-            if sum(self.get_queue_length()) == 0 and 200 >self._currentStep > 40: 
-                reward = 1
             
             self.overall_reward += reward
 
@@ -77,7 +78,7 @@ class Simulation:
             # Train
             if len(self.memory._experiences) > self.batch_size and self._currentStep % 10 == 0:
                 batch = self.memory.get_batch(self.batch_size)
-                self._model.train(batch)
+                print("-----TRAIN------",self._model.train(batch))
 
         traci.close()
          
@@ -109,12 +110,19 @@ class Simulation:
           
         return Halt_N, Halt_S, Halt_E, Halt_W
 
-    def get_waiting_time(self, vehicle):
-        self.vehicle = vehicle
-        wait_time = traci.vehicle.getAccumulatedWaitingTime(self.vehicle)
-        self.waiting_times[self.vehicle] = wait_time
-
-        return wait_time
+    def get_waiting_time(self):
+        incoming_roads = ["-125514711","125514709","548975769","-125514713"]
+        cars = traci.vehicle.getIDList()
+        for car_id in cars: 
+            wait_time = traci.vehicle.getAccumulatedWaitingTime(car_id) #
+            road_id = traci.vehicle.getRoadID(car_id) #Get the road of the car
+            if road_id in incoming_roads: #Only waiting times of incoming road.
+                self._waiting_times[car_id] = wait_time
+            else: 
+                if car_id in self._waiting_times: # A car that has cleared the intersection. 
+                    del self._waiting_times[car_id]
+        total_waiting_time = sum(self._waiting_times.values())
+        return total_waiting_time
      
     def get_co2_emission(self,vehicle):
         self.vehicle = vehicle

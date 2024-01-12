@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 
 # Params
 sumo_mode = "sumo"
-max_step = 200
-percentage_straight = 0.5
+max_step = 400
+percentage_straight = 0.75
 min_green_phase_steps = 10
 yellow_phase_steps = 2
 red_phase_steps = 2
@@ -18,7 +18,7 @@ final_score_weights = {"total_waiting_time": 1, "halting_vehicle_count": 1,
                        "co2_emission_total": 1, "avg_queue_length": 1, 
                        "avg_wait_time": 1}
 car_intensity_per_min = 15
-spredning = 15
+spredning = 7
 seed = None
 
 # Environment
@@ -27,7 +27,7 @@ environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_s
 # DQN Model
 input_dim = 4
 hidden_dim = 124
-epsilon_decrease = 0.01**(1/10000) # 0.01 fjernes hver 10000 gang.
+epsilon_decrease = 0.01**(1/50000) # 0.01 fjernes hver 10000 gang.
 gamma = 0.99
 model = DQN(environment.num_actions, input_dim, hidden_dim, epsilon_decrease, gamma)
 memory = Memory(10000)
