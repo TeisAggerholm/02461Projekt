@@ -78,10 +78,11 @@ class Simulation:
             # Train
             if len(self.memory._experiences) > self.batch_size and self._currentStep % 10 == 0:
                 batch = self.memory.get_batch(self.batch_size)
-                print("-----TRAIN------",self._model.train(batch))
+                print("-----CURRENT LOSS----",self._model.train(batch))
 
         traci.close()
-         
+        self._model.epsilon_dec_fun()
+
     def _get_vehicle_stats(self):
         # STATS
         vehicles = traci.vehicle.getIDList()

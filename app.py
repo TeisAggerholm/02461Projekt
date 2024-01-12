@@ -27,7 +27,7 @@ environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_s
 # DQN Model
 input_dim = 4
 hidden_dim = 124
-epsilon_decrease = 0.01**(1/50000) # 0.01 fjernes hver 10000 gang.
+epsilon_decrease = 0.01**(1/5000) # 0.1 fjernes pr. 100 epsioder
 gamma = 0.99
 model = DQN(environment.num_actions, input_dim, hidden_dim, epsilon_decrease, gamma)
 memory = Memory(10000)

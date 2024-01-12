@@ -96,11 +96,15 @@ class DQN(nn.Module):
         loss.backward()
         self.optimizer.step()
 
+        total_weight_mean = sum(p.data.mean() for p in self.net.parameters()) / len(list(self.net.parameters()))
+        print(f"-----Average weight mean------: {total_weight_mean}")
+
+        return loss.item()
+
+    def epsilon_dec_fun(self): 
         self.epsilon = (self.epsilon - 0.1) * self.epsilon_decrease + 0.1
         print("Epsilon: ",self.epsilon)
 
-
-        return loss.item()
         
 
 
