@@ -49,7 +49,7 @@ class DQN(nn.Module):
         )
 
         try: 
-            self.load_model("test1.pth")
+            self.load_model("2.pth")
             print("----Weights loaded------")
 
         except FileNotFoundError:
@@ -75,7 +75,8 @@ class DQN(nn.Module):
 
     def choose_action(self, state, currentStep):
         if random.random() < self.epsilon: 
-            action = random.choice(range(self.num_actions))
+            action = random.choice(range(2)) #Vælger random action 0 eller 1. 
+    
         else:
             Q_values = torch.zeros(2)
             for i in range(2):
@@ -83,7 +84,8 @@ class DQN(nn.Module):
                 Q_values[i] = self.net(state)
                 state = state[:-1]
             action = torch.argmax(Q_values).item()
-          
+            
+        print(action)
         return action
     
     def convert_to_tensor(self, state_list):

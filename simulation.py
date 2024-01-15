@@ -54,10 +54,8 @@ class Simulation:
                     last_executed_action = action
 
             #REWARD
-            reward = -sum(self.get_queue_length())
-
-       #     current_total_wait = self.get_waiting_time()
-      #      reward = last_wait - current_total_wait
+            current_total_wait = self.get_waiting_time()
+            reward = -last_wait - current_total_wait
 
             # UPDATE        
             self._environment.set_lights()
@@ -65,7 +63,7 @@ class Simulation:
             self._currentStep += 1     
             self._environment.increment_steps_in_current_phase()
             self._environment.update_current_phase()
-            #last_wait = current_total_wait
+            last_wait = current_total_wait
 
             
             self.overall_reward += reward
@@ -115,7 +113,7 @@ class Simulation:
         incoming_roads = ["-125514711","125514709","548975769","-125514713"]
         cars = traci.vehicle.getIDList()
         for car_id in cars: 
-            wait_time = traci.vehicle.getAccumulatedWaitingTime(car_id) #
+            wait_time = traci.vehicle.getAccumulatedWaitingTime(car_id)
             road_id = traci.vehicle.getRoadID(car_id) #Get the road of the car
             if road_id in incoming_roads: #Only waiting times of incoming road.
                 self._waiting_times[car_id] = wait_time

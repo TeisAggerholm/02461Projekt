@@ -37,7 +37,7 @@ interval = 15
 #model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 20
+episodes = 1000
 
 episode_stats = []
 
@@ -67,7 +67,7 @@ for episode in range(episodes):
     plt.draw()
     plt.pause(0.1)  # Pause to update the plot
 
-model.save_model("First2_run")
+model.save_model("Newreward1.pth")
 
 plt.ioff()  # Turn off interactive mode
 plt.show()  # Show the final plot
