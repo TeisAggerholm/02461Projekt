@@ -1,7 +1,7 @@
 import traci
 import os
 from models.dqn import Memory, Experience, DQN
-
+import numpy as np
 class Simulation:
     def __init__(self, max_step, _environment, _model, final_score_weights, episodes, memory):
         self.episodes = episodes
@@ -30,6 +30,8 @@ class Simulation:
         while self._currentStep < self.max_step:
             state_list = self.get_queue_length()
             
+           # state_github = self.getGithubState()
+            
             #ADD TO MEMORY
             if old_action != -1:
                 exp = (previous["state_list"], previous["action"], previous["reward"], state_list, 0)
@@ -55,8 +57,7 @@ class Simulation:
 
             #REWARD
             current_total_wait = self.get_waiting_time()
-            reward = -last_wait - current_total_wait
-
+            reward = last_wait - current_total_wait
             # UPDATE        
             self._environment.set_lights()
             traci.simulationStep()    
@@ -65,8 +66,8 @@ class Simulation:
             self._environment.update_current_phase()
             last_wait = current_total_wait
 
-            
-            self.overall_reward += reward
+            if reward < 0: 
+                self.overall_reward += reward
 
             previous["state_list"] = state_list
             previous["action"] = action
@@ -74,12 +75,86 @@ class Simulation:
             old_action = action
             
             # Train
-            if len(self.memory._experiences) > self.batch_size and self._currentStep % 10 == 0:
-                batch = self.memory.get_batch(self.batch_size)
+           # if len(self.memory._experiences) > self.batch_size and self._currentStep % 10 == 0:
+               # batch = self.memory.get_batch(self.batch_size)
                 #print("-----CURRENT LOSS----",self._model.train(batch))
 
         traci.close()
         self._model.epsilon_dec_fun()
+        for i in range(400): 
+            batch = self.memory.get_batch(50)
+            self._model.train(batch)
+        print("---DONE TRAINING---")
+    
+    def getGithubState(self):
+        """
+        Retrieve the state of the intersection from sumo, in the form of cell occupancy
+        """
+        state = np.zeros(self._num_states)
+        car_list = traci.vehicle.getIDList()
+
+        for car_id in car_list:
+            lane_pos = traci.vehicle.getLanePosition(car_id)
+            lane_id = traci.vehicle.getLaneID(car_id)
+            lane_len = traci.lane.getLength(lane_id)
+            lane_pos = lane_len - lane_pos  # inversion of lane pos, so if the car is close to the traffic light -> lane_pos = 0 --- 750 = max len of a road
+
+            # distance in meters from the traffic light -> mapping into cells
+            if lane_pos < 7:
+                lane_cell = 0
+            elif lane_pos < 14:
+                lane_cell = 1
+            elif lane_pos < 21:
+                lane_cell = 2
+            elif lane_pos < 28:
+                lane_cell = 3
+            elif lane_pos < 40:
+                lane_cell = 4
+            elif lane_pos < 60:
+                lane_cell = 5
+            elif lane_pos < 100:
+                lane_cell = 6
+            elif lane_pos < 160:
+                lane_cell = 7
+            elif lane_pos < 400:
+                lane_cell = 8
+            elif lane_pos <= 750:
+                lane_cell = 9
+
+            # finding the lane where the car is located 
+            # x2TL_3 are the "turn left only" lanes
+            if lane_id == "W2TL_0" or lane_id == "W2TL_1" or lane_id == "W2TL_2":
+                lane_group = 0
+            elif lane_id == "W2TL_3":
+                lane_group = 1
+            elif lane_id == "N2TL_0" or lane_id == "N2TL_1" or lane_id == "N2TL_2":
+                lane_group = 2
+            elif lane_id == "N2TL_3":
+                lane_group = 3
+            elif lane_id == "E2TL_0" or lane_id == "E2TL_1" or lane_id == "E2TL_2":
+                lane_group = 4
+            elif lane_id == "E2TL_3":
+                lane_group = 5
+            elif lane_id == "S2TL_0" or lane_id == "S2TL_1" or lane_id == "S2TL_2":
+                lane_group = 6
+            elif lane_id == "S2TL_3":
+                lane_group = 7
+            else:
+                lane_group = -1
+
+            if lane_group >= 1 and lane_group <= 7:
+                car_position = int(str(lane_group) + str(lane_cell))  # composition of the two postion ID to create a number in interval 0-79
+                valid_car = True
+            elif lane_group == 0:
+                car_position = lane_cell
+                valid_car = True
+            else:
+                valid_car = False  # flag for not detecting cars crossing the intersection or driving away from it
+
+            if valid_car:
+                state[car_position] = 1  # write the position of the car car_id in the state array in the form of "cell occupied"
+
+        return state
 
     def _get_vehicle_stats(self):
         # STATS

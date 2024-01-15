@@ -31,7 +31,7 @@ class Experience:
 class DQN(nn.Module):
     def __init__(self, num_actions, state_dim, hidden_dim, epsilon_decrease, gamma):
         super(DQN, self).__init__()
-        self.epsilon = 1
+        self.epsilon = 0
         self.epsilon_decrease = epsilon_decrease
         self.gamma = gamma
         self.learning_rate = 0.001
@@ -49,7 +49,7 @@ class DQN(nn.Module):
         )
 
         try: 
-            self.load_model("2.pth")
+            self.load_model("Newreward2.pth")
             print("----Weights loaded------")
 
         except FileNotFoundError:
