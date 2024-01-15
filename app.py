@@ -25,11 +25,11 @@ seed = None
 environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning, seed) 
 
 # DQN Model
-input_dim = 4
+input_dim = 5
 hidden_dim = 124
 epsilon_decrease = 0.01**(1/5000) # 0.1 fjernes pr. 100 epsioder
 gamma = 0.99
-model = DQN(environment.num_actions, input_dim, hidden_dim, epsilon_decrease, gamma)
+model = DQN(1, input_dim, hidden_dim, epsilon_decrease, gamma)
 memory = Memory(10000)
 
 # Interval_model
@@ -37,7 +37,7 @@ interval = 15
 #model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 2
+episodes = 20
 
 episode_stats = []
 
@@ -67,7 +67,7 @@ for episode in range(episodes):
     plt.draw()
     plt.pause(0.1)  # Pause to update the plot
 
-model.save_model("First_run")
+model.save_model("First2_run")
 
 plt.ioff()  # Turn off interactive mode
 plt.show()  # Show the final plot
