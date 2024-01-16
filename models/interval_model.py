@@ -28,7 +28,7 @@ class Interval_model:
     def train(self, batch):
         pass
 
-    def save_model(self, pth):
+    def save_model(self):
         pass
     def epsilon_dec_fun(self):
         pass
