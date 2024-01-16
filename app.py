@@ -38,7 +38,7 @@ interval = 15
 # model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 5
+episodes = 2
 episode_stats = []
 
 # Initialize a plot
@@ -46,15 +46,15 @@ plt.figure(figsize=(10, 6))
 plt.ion()
 
 #SAVE TO CSV file: 
-rewards_folder = 'Data'
-if not os.path.exists(rewards_folder):
-    os.makedirs(rewards_folder)
+data_folder = 'data'
+if not os.path.exists(data_folder):
+    os.makedirs(data_folder)
 
 model_class_name = type(model).__name__
-num_files = len([name for name in os.listdir(rewards_folder) if os.path.isfile(os.path.join(rewards_folder, name))])
+num_files = len([name for name in os.listdir(data_folder) if os.path.isfile(os.path.join(data_folder, name))])
 
 file_name = f"rewards:{model_class_name}:{num_files}.csv"
-file_path = os.path.join(rewards_folder, file_name)
+file_path = os.path.join(data_folder, file_name)
 
 rewards = []
 queue_length = []
@@ -84,13 +84,14 @@ for episode in range(episodes):
 
     #Save overall reward to CSV.
     rewards.append(simulation.overall_reward)
-    #queue_length.append()
+    queue_length.append(simulation.overall_reward_queue_length)
+    print(simulation.overall_reward_queue_length)
 
 with open(file_path, 'w', newline='') as file:
     writer = csv.writer(file)
-    for reward in rewards:
-        writer.writerow([reward])
-        writer.writerow([queue_length])
+    for i in range(len(rewards)):
+        writer.writerow([rewards[i], queue_length[i]])
+    
 
 model.save_model()
 print('Model saved')

@@ -20,6 +20,7 @@ class Simulation:
         self.overall_reward = 0
         self.batch_size = 64
         self._waiting_times = {}
+        self.overall_reward_queue_length = 0
 
     def run(self):
         self._environment.run_env()
@@ -72,6 +73,10 @@ class Simulation:
             if reward < 0: 
                 self.overall_reward += reward
 
+            # OVERALL_REWARD_QUEUE_LENGTH   
+            self.overall_reward_queue_length += sum(state.tolist())
+
+
             previous["state_list"] = state.tolist()
             previous["action"] = action
             previous["reward"] = reward
@@ -79,7 +84,7 @@ class Simulation:
             
         traci.close()
 
-        
+
         self.overall_reward
         
         self._model.epsilon_dec_fun()
