@@ -4,24 +4,6 @@ import torch.optim as optim
 import numpy as np
 import random
 
-
-class Memory:
-    def __init__(self, capacity):
-        self.capacity = capacity
-        self._experiences = []
-    
-    def add_experience(self, experience):
-        self._experiences.append(experience)
-
-        if len(self._experiences) > self.capacity:
-            self._experiences.pop(0)
-
-    def get_batch(self, batch_size):
-        if len(self._experiences) < batch_size:
-            return None  # Not enough samples to create a batch
-        return random.sample(self._experiences, batch_size)
-        
-
 class DQN(nn.Module):
     def __init__(self, num_actions, state_dim, hidden_dim, epsilon_decrease, gamma):
         super(DQN, self).__init__()
