@@ -74,18 +74,13 @@ class Simulation:
             previous["reward"] = reward
             old_action = action
             
-            # Train
-           # if len(self.memory._experiences) > self.batch_size and self._currentStep % 10 == 0:
-               # batch = self.memory.get_batch(self.batch_size)
-                #print("-----CURRENT LOSS----",self._model.train(batch))
-
         traci.close()
 
         
-        # self._model.epsilon_dec_fun()
-        # for i in range(400): 
-        #     batch = self.memory.get_batch(50)
-        #     self._model.train(batch)
+        self._model.epsilon_dec_fun()
+        for i in range(400): 
+            batch = self.memory.get_batch(50)
+            self._model.train(batch)
         print("---DONE TRAINING---")
     
     def getGithubState(self):

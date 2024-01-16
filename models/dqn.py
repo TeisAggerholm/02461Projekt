@@ -124,15 +124,3 @@ class DQN(nn.Module):
     def load_model(self, file_name):
         self.load_state_dict(torch.load(file_name))
 
-
-#Loss function 
-
-
-# Reward
-# Loss function
-# Batch, memory læring
-
-# Batch state
-# Batch reward
-# Batch action
-# Batch next state 

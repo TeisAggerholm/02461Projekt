@@ -6,6 +6,7 @@ class Interval_model:
         self.last_action_step = -1
         self.yellow_phase_steps = yellow_phase_steps
         self.red_phase_steps = red_phase_steps
+        self.epsilon = 0
 
     def choose_action(self, state_list, currentStep):
         
@@ -25,4 +26,9 @@ class Interval_model:
 
 
     def train(self, batch):
+        pass
+
+    def save_model(self, pth):
+        pass
+    def epsilon_dec_fun(self):
         pass

@@ -7,21 +7,19 @@ from models.dqn import DQN, Memory
 import matplotlib.pyplot as plt
 
 
-# Params
+# Environment
 sumo_mode = "sumo"
 max_step = 400
 percentage_straight = 0.75
 min_green_phase_steps = 10
 yellow_phase_steps = 2
 red_phase_steps = 2
-final_score_weights = {"total_waiting_time": 1, "halting_vehicle_count": 1,
-                       "co2_emission_total": 1, "avg_queue_length": 1, 
-                       "avg_wait_time": 1}
 car_intensity_per_min = 15
 spredning = 7
 seed = None
-
-# Environment
+final_score_weights = {"total_waiting_time": 1, "halting_vehicle_count": 1,
+                       "co2_emission_total": 1, "avg_queue_length": 1, 
+                       "avg_wait_time": 1}
 environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning, seed) 
 
 # DQN Model
@@ -38,12 +36,11 @@ model = Interval_model(environment.num_actions, interval, yellow_phase_steps, re
 
 # Simulation
 episodes = 200
-
 episode_stats = []
 
 # Initialize a plot
 plt.figure(figsize=(10, 6))
-plt.ion()  # Turn on interactive mode
+plt.ion()
 
 for episode in range(episodes):
     print(f"-----------------------------Simulating episode {episode+1}-----------------------------")
@@ -59,7 +56,7 @@ for episode in range(episodes):
     # Plotting the data so far
     plt.scatter(episode + 1, simulation.overall_reward)  # Plot the new data point
     # plt.title(f'Overall Reward per Episode. Epsilon: {round(simulation._model.epsilon,2)}')
-    plt.title(f'Overall Reward per Episode.')
+    plt.title(f'Overall Reward per Episode Epsilon: {simulation._model.epsilon}')
     plt.xlabel('Episode')
     plt.ylabel('Overall Reward epsilon')
     plt.xlim(1, episode)
@@ -68,7 +65,7 @@ for episode in range(episodes):
     plt.draw()
     plt.pause(0.1)  # Pause to update the plot
 
-# model.save_model("Newreward2.pth")
+model.save_model("Newreward2.pth")
 print('Model saved')
 
 plt.ioff()  # Turn off interactive mode
