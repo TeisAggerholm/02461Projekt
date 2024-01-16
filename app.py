@@ -26,25 +26,28 @@ environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_s
 
 # DQN Model
 input_dim = 5
-hidden_dim = 200
+hidden_dim = 124
 epsilon_decrease = 0.01**(1/1000) # 0.1 fjernes pr. 100 epsioder
 gamma = 0.99
-weights_path = "Newreward2.pth"
-# model = DQN(1, input_dim, hidden_dim, epsilon_decrease, gamma, weights_path)
+weights_path = "124.pth"
+model = DQN(1, input_dim, hidden_dim, epsilon_decrease, gamma, weights_path)
 memory = Memory(50000)
 
 # Interval_model
-interval = 15
-model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
+interval = 35
+#model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 2
+episodes = 1000
 episode_stats = []
 overall_reward_queue_length = []
+ephocs = 0
 
 # Initialize a plot
 plt.figure(figsize=(12, 10))
 plt.ion()
+
+
 
 #SAVE TO CSV file: 
 data_folder = 'data'
@@ -63,7 +66,7 @@ queue_length = []
 for episode in range(episodes):
     print(f"-----------------------------Simulating episode {episode+1}-----------------------------")
     # Assuming Simulation is defined elsewhere
-    simulation = Simulation(max_step, environment, model, final_score_weights, episodes, memory)
+    simulation = Simulation(max_step, environment, model, final_score_weights, episodes, memory, ephocs)
     simulation.run()
     print("Overall reward: ", simulation.overall_reward)
     episode_stats.append(simulation.overall_reward)

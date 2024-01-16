@@ -5,7 +5,7 @@ import numpy as np
 import torch
 
 class Simulation:
-    def __init__(self, max_step, _environment, _model, final_score_weights, episodes, memory):
+    def __init__(self, max_step, _environment, _model, final_score_weights, episodes, memory, epochs):
         self.episodes = episodes
         self.max_step = max_step
         self._environment = _environment
@@ -21,6 +21,7 @@ class Simulation:
         self.batch_size = 64
         self._waiting_times = {}
         self.overall_reward_queue_length = 0
+        self.epochs = epochs
 
     def run(self):
         self._environment.run_env()
@@ -88,7 +89,7 @@ class Simulation:
         self.overall_reward
         
         self._model.epsilon_dec_fun()
-        for i in range(400): 
+        for i in range(self.epochs): 
             batch = self.memory.get_batch(50)
             self._model.train(batch)
         print("---DONE TRAINING---")
