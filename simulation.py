@@ -80,10 +80,12 @@ class Simulation:
                 #print("-----CURRENT LOSS----",self._model.train(batch))
 
         traci.close()
-        self._model.epsilon_dec_fun()
-        for i in range(400): 
-            batch = self.memory.get_batch(50)
-            self._model.train(batch)
+
+        
+        # self._model.epsilon_dec_fun()
+        # for i in range(400): 
+        #     batch = self.memory.get_batch(50)
+        #     self._model.train(batch)
         print("---DONE TRAINING---")
     
     def getGithubState(self):

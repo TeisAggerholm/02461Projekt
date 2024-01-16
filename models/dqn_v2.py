@@ -21,17 +21,6 @@ class Memory:
             return None  # Not enough samples to create a batch
         return random.sample(self._experiences, batch_size)
         
-class Experience:
-    def __init__(self, state, action, reward, next_state):
-        self.state = state 
-        self.action = action
-        self.reward = reward 
-        self.next_state = next_state
-
-# Batch state
-# Batch reward
-# Batch action
-# Batch next state 
 
 class DQN(nn.Module):
     def __init__(self, num_actions, state_dim, hidden_dim, epsilon_decrease, gamma):
@@ -114,18 +103,3 @@ class DQN(nn.Module):
     def epsilon_dec_fun(self): 
         self.epsilon = (self.epsilon - 0.1) * self.epsilon_decrease + 0.1
         print("Epsilon: ",self.epsilon)
-
-        
-
-
-#Loss function 
-
-
-# Reward
-# Loss function
-# Batch, memory læring
-
-# Batch state
-# Batch reward
-# Batch action
-# Batch next state 

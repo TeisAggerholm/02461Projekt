@@ -31,7 +31,7 @@ class Experience:
 class DQN(nn.Module):
     def __init__(self, num_actions, state_dim, hidden_dim, epsilon_decrease, gamma):
         super(DQN, self).__init__()
-        self.epsilon = 0
+        self.epsilon = 0.35
         self.epsilon_decrease = epsilon_decrease
         self.gamma = gamma
         self.learning_rate = 0.001
@@ -84,8 +84,6 @@ class DQN(nn.Module):
                 Q_values[i] = self.net(state)
                 state = state[:-1]
             action = torch.argmax(Q_values).item()
-            
-        print(action)
         return action
     
     def convert_to_tensor(self, state_list):
