@@ -5,7 +5,7 @@ import numpy as np
 import random
 
 class DQN(nn.Module):
-    def __init__(self, num_actions, state_dim, hidden_dim, epsilon_decrease, gamma):
+    def __init__(self, num_actions, state_dim, hidden_dim, epsilon_decrease, gamma, weights_path):
         super(DQN, self).__init__()
         self.epsilon = 0.35
         self.epsilon_decrease = epsilon_decrease
@@ -14,6 +14,7 @@ class DQN(nn.Module):
 
         self.num_actions = num_actions
         action_dim = num_actions
+        self.weights_path = weights_path
     
         # input layer, Activation layer (ReLU), Output layer
         self.net = nn.Sequential(
@@ -25,7 +26,7 @@ class DQN(nn.Module):
         )
 
         try: 
-            self.load_model("Newreward2.pth")
+            self.load_model()
             print("----Weights loaded------")
 
         except FileNotFoundError:
@@ -92,9 +93,9 @@ class DQN(nn.Module):
         self.epsilon = (self.epsilon - 0.1) * self.epsilon_decrease + 0.1
         print("Epsilon: ",self.epsilon)
 
-    def save_model(self, file_name):
-        torch.save(self.state_dict(), file_name)
+    def save_model(self):
+        torch.save(self.state_dict(), self.weights_path)
     
-    def load_model(self, file_name):
-        self.load_state_dict(torch.load(file_name))
+    def load_model(self):
+        self.load_state_dict(torch.load(self.weights_path))
 

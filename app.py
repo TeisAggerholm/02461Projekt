@@ -27,7 +27,8 @@ input_dim = 5
 hidden_dim = 200
 epsilon_decrease = 0.01**(1/1000) # 0.1 fjernes pr. 100 epsioder
 gamma = 0.99
-model = DQN(1, input_dim, hidden_dim, epsilon_decrease, gamma)
+weights_path = "Newreward2.pth"
+model = DQN(1, input_dim, hidden_dim, epsilon_decrease, gamma, weights_path)
 memory = Memory(50000)
 
 # Interval_model
@@ -35,7 +36,7 @@ interval = 15
 # model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 200
+episodes = 2
 episode_stats = []
 
 # Initialize a plot
@@ -65,7 +66,7 @@ for episode in range(episodes):
     plt.draw()
     plt.pause(0.1)  # Pause to update the plot
 
-model.save_model("Newreward2.pth")
+model.save_model()
 print('Model saved')
 
 plt.ioff()  # Turn off interactive mode
