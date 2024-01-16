@@ -80,11 +80,14 @@ class Simulation:
         traci.close()
 
         
+        self.overall_reward
+        
         self._model.epsilon_dec_fun()
         for i in range(400): 
             batch = self.memory.get_batch(50)
             self._model.train(batch)
         print("---DONE TRAINING---")
+
     
     def queue_length_state(self): 
         Halt_N = traci.edge.getLastStepHaltingNumber("-125514711")

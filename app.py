@@ -6,6 +6,8 @@ from models.interval_model import Interval_model
 from models.dqn import DQN
 from memory import Memory
 import matplotlib.pyplot as plt
+import csv 
+import os 
 
 # Environment
 sumo_mode = "sumo"
@@ -36,12 +38,26 @@ interval = 15
 # model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 2
+episodes = 5
 episode_stats = []
 
 # Initialize a plot
 plt.figure(figsize=(10, 6))
 plt.ion()
+
+#SAVE TO CSV file: 
+rewards_folder = 'Data'
+if not os.path.exists(rewards_folder):
+    os.makedirs(rewards_folder)
+
+model_class_name = type(model).__name__
+num_files = len([name for name in os.listdir(rewards_folder) if os.path.isfile(os.path.join(rewards_folder, name))])
+
+file_name = f"rewards:{model_class_name}:{num_files}.csv"
+file_path = os.path.join(rewards_folder, file_name)
+
+rewards = []
+queue_length = []
 
 for episode in range(episodes):
     print(f"-----------------------------Simulating episode {episode+1}-----------------------------")
@@ -65,6 +81,16 @@ for episode in range(episodes):
     plt.grid(True)
     plt.draw()
     plt.pause(0.1)  # Pause to update the plot
+
+    #Save overall reward to CSV.
+    rewards.append(simulation.overall_reward)
+    #queue_length.append()
+
+with open(file_path, 'w', newline='') as file:
+    writer = csv.writer(file)
+    for reward in rewards:
+        writer.writerow([reward])
+        writer.writerow([queue_length])
 
 model.save_model()
 print('Model saved')
