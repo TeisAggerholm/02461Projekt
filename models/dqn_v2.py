@@ -48,9 +48,7 @@ class DQN(nn.Module):
             for i in range(2):
                 state = self.convert_to_tensor(state + [i])
                 Q_values[i] = self.net(state)
-            action = torch.argmax(Q_values).item()
-        # print("-----TENSOR------", (self.net(state).detach().numpy()))
-        # print("------ACTION------", action)    
+            action = torch.argmax(Q_values).item() 
         return action
     
     def convert_to_tensor(self, state_list):
@@ -84,4 +82,3 @@ class DQN(nn.Module):
 
     def epsilon_dec_fun(self): 
         self.epsilon = (self.epsilon - 0.1) * self.epsilon_decrease + 0.1
-        print("Epsilon: ",self.epsilon)

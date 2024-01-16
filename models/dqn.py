@@ -4,30 +4,6 @@ import torch.optim as optim
 import numpy as np
 import random
 
-
-class Memory:
-    def __init__(self, capacity):
-        self.capacity = capacity
-        self._experiences = []
-    
-    def add_experience(self, experience):
-        self._experiences.append(experience)
-
-        if len(self._experiences) > self.capacity:
-            self._experiences.pop(0)
-
-    def get_batch(self, batch_size):
-        if len(self._experiences) < batch_size:
-            return None  # Not enough samples to create a batch
-        return random.sample(self._experiences, batch_size)
-        
-class Experience:
-    def __init__(self, state, action, reward, next_state):
-        self.state = state 
-        self.action = action
-        self.reward = reward 
-        self.next_state = next_state
- 
 class DQN(nn.Module):
     def __init__(self, num_actions, state_dim, hidden_dim, epsilon_decrease, gamma):
         super(DQN, self).__init__()
@@ -67,7 +43,7 @@ class DQN(nn.Module):
         for state in states:
             Q_values = torch.zeros(2)
             for i in range(2):
-                state = self.convert_to_tensor(list(state) + [i])
+                state = torch.cat((state, torch.Tensor([i])))
                 Q_values[i] = self.net(state)
                 state = state[:-1]
             qs.append(torch.max(Q_values, dim=0).values)
@@ -80,14 +56,11 @@ class DQN(nn.Module):
         else:
             Q_values = torch.zeros(2)
             for i in range(2):
-                state = self.convert_to_tensor(list(state) + [i])
+                state = torch.cat((state, torch.Tensor([i])))
                 Q_values[i] = self.net(state)
                 state = state[:-1]
             action = torch.argmax(Q_values).item()
         return action
-    
-    def convert_to_tensor(self, state_list):
-        return torch.Tensor(state_list)
 
     def train(self, batch):
         if batch is None:
@@ -114,6 +87,7 @@ class DQN(nn.Module):
         #print(f"-----Average weight mean------: {total_weight_mean}")
 
         return loss.item()
+    
     def epsilon_dec_fun(self): 
         self.epsilon = (self.epsilon - 0.1) * self.epsilon_decrease + 0.1
         print("Epsilon: ",self.epsilon)

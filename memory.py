@@ -1,3 +1,5 @@
+import random
+
 class Memory:
     def __init__(self, capacity):
         self.capacity = capacity

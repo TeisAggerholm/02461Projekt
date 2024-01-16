@@ -7,7 +7,6 @@ from models.dqn import DQN
 from memory import Memory
 import matplotlib.pyplot as plt
 
-
 # Environment
 sumo_mode = "sumo"
 max_step = 400
