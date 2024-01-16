@@ -41,7 +41,7 @@ interval = 35
 episodes = 1000
 episode_stats = []
 overall_reward_queue_length = []
-ephocs = 0
+ephocs = 400
 
 # Initialize a plot
 plt.figure(figsize=(12, 10))

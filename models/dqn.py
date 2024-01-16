@@ -7,7 +7,7 @@ import random
 class DQN(nn.Module):
     def __init__(self, num_actions, state_dim, hidden_dim, epsilon_decrease, gamma, weights_path):
         super(DQN, self).__init__()
-        self.epsilon = 0
+        self.epsilon = 1
         self.epsilon_decrease = epsilon_decrease
         self.gamma = gamma
         self.learning_rate = 0.001
@@ -97,5 +97,5 @@ class DQN(nn.Module):
         torch.save(self.state_dict(), "weights/"+self.weights_path)
     
     def load_model(self):
-        self.load_state_dict(torch.load(self.weights_path))
-
+        self.load_state_dict(torch.load("weights/"+self.weights_path))
+        
