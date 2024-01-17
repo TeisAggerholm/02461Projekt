@@ -28,7 +28,6 @@ class Simulation:
         old_action = -1
         last_executed_action = -1
         last_wait = 0
-        last_wait_actionable_wait = 0
         
         previous = {"state_list": 0, "action": 0, "reward": 0}
 
@@ -36,6 +35,12 @@ class Simulation:
 
             # STATE
             state = self.get_state()   
+           
+            #ADD TO MEMORY
+            if old_action != -1:
+                exp = (previous["state_list"], previous["action"], previous["reward"], state.tolist(), 0)
+                #print("State_list", exp) #PRINT FOR STATE_LIST pr STEP
+                self.memory.add_experience(exp)
 
 
             # ACTION
@@ -43,24 +48,16 @@ class Simulation:
             isActionable = self._environment.isActionable()
             
             if isActionable:
-                
-                #ADD TO MEMORY
-                if old_action != -1:
-                    current_total_wait = self.get_waiting_time()
-                    exp = (previous["state_list"], previous["action"], last_wait_actionable_wait - current_total_wait, state.tolist(), 0)
-                    #print("State_list", exp) #PRINT FOR STATE_LIST pr STEP
-                    self.memory.add_experience(exp)
-                
-                if action != last_executed_action and old_action != -1:
+                if last_executed_action == -1:
+                    self._environment.push_green_phase(action)
+                    last_executed_action = action
+
+                elif action != last_executed_action:
                     self._environment.push_yellow_phase(last_executed_action)
                     self._environment.push_red_phase()
                     self._environment.push_yellow_phase(action)
                     self._environment.push_green_phase(action)
                     last_executed_action = action
-                
-                self._environment.push_green_phase(action)
-                last_executed_action = action
-
 
             # REWARD
             current_total_wait = self.get_waiting_time()
@@ -80,12 +77,11 @@ class Simulation:
             # OVERALL_REWARD_QUEUE_LENGTH   
             self.overall_reward_queue_length += sum(state.tolist())
 
-            if isActionable:
-                previous["state_list"] = state.tolist()
-                previous["action"] = action
-                previous["reward"] = reward
-                old_action = action
-                last_wait_actionable_wait = current_total_wait
+
+            previous["state_list"] = state.tolist()
+            previous["action"] = action
+            previous["reward"] = reward
+            old_action = action
             
         traci.close()
 

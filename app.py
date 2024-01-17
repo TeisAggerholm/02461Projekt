@@ -4,6 +4,7 @@ from simulation import Simulation
 from environments.crossintersection import CrossIntersection
 from models.interval_model import Interval_model
 from models.dqn import DQN
+from models.dqn_old import DQN_prev
 from memory import Memory
 import matplotlib.pyplot as plt
 import csv 
@@ -11,7 +12,7 @@ import os
 
 # Environment
 sumo_mode = "sumo"
-max_step = 400
+max_step = 500
 percentage_straight = 0.75
 min_green_phase_steps = 10
 yellow_phase_steps = 2
@@ -25,20 +26,21 @@ final_score_weights = {"total_waiting_time": 1, "halting_vehicle_count": 1,
 environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning, seed) 
 
 # DQN Model
-input_dim = 5
-hidden_dim = 124
+hidden_dim = 300
 epsilon_decrease = 0.01**(1/1000) # 0.1 fjernes pr. 100 epsioder
 gamma = 0.99
-weights_path = "124.pth"
-model = DQN(1, input_dim, hidden_dim, epsilon_decrease, gamma, weights_path)
+weights_path = "300hidden.pth"
+#model = DQN(1, 5, hidden_dim, epsilon_decrease, gamma, weights_path)
 memory = Memory(50000)
+
+model = DQN_prev(2,80,hidden_dim,epsilon_decrease,gamma,weights_path)
 
 # Interval_model
 interval = 35
 #model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 1000
+episodes = 300
 episode_stats = []
 overall_reward_queue_length = []
 ephocs = 400
@@ -46,7 +48,6 @@ ephocs = 400
 # Initialize a plot
 plt.figure(figsize=(12, 10))
 plt.ion()
-
 
 
 #SAVE TO CSV file: 
@@ -67,6 +68,8 @@ for episode in range(episodes):
     print(f"-----------------------------Simulating episode {episode+1}-----------------------------")
     # Assuming Simulation is defined elsewhere
     simulation = Simulation(max_step, environment, model, final_score_weights, episodes, memory, ephocs)
+    simulation._model.epsilon = 1 - (episode / episodes)
+    
     simulation.run()
     print("Overall reward: ", simulation.overall_reward)
     episode_stats.append(simulation.overall_reward)
