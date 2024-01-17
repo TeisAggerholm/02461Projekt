@@ -35,6 +35,8 @@ class Simulation:
 
             action = self._model.choose_action(state, self._currentStep)
 
+            print(f'action: {action}', f'step: {self._currentStep}')
+
             if self._currentStep != 0:
                 self._memory.add_experience((old_state.tolist(), old_action, reward, state.tolist(),0))
                 

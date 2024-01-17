@@ -4,7 +4,7 @@ from simulation3 import Simulation
 # from simulation import Simulation
 # from environments.crossintersection import CrossIntersection
 from environments.crossintersection2 import CrossIntersection
-from models.interval_model import Interval_model
+from models.interval_model2 import Interval_model
 from models.dqn import DQN
 from models.dqn_old import DQN_prev
 from memory import Memory
@@ -31,14 +31,13 @@ weights_path = "17.01v5.pth"
 #model = DQN(1, 5, hidden_dim, epsilon_decrease, gamma, weights_path)
 memory = Memory(50000)
 
-model = DQN_prev(2,80,hidden_dim,epsilon_decrease,gamma,weights_path)
+# model = DQN_prev(2,80,hidden_dim,epsilon_decrease,gamma,weights_path)
 
 # Interval_model
-interval = 35
-#model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
+model = Interval_model(environment.num_actions)
 
 # Simulation
-episodes = 1000
+episodes = 100
 episode_stats = []
 overall_reward_queue_length = []
 ephocs = 200
