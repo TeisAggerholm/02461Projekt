@@ -36,7 +36,6 @@ class Simulation:
 
             if self._currentStep != 0:
                 self._memory.add_experience((old_state.tolist(), old_action, reward, state.tolist(),0))
-                print("---ADDED TO MEMORY----", f'STEP: {self._currentStep}')
                 
             if old_action == -1:
                 steps_to_do_green_phase = self._environment.set_green_phase(action)
@@ -74,7 +73,7 @@ class Simulation:
         for _ in range(self.epochs):
             batch = self._memory.get_batch(self.batch_size)
             self._model.train(batch)
-            print("----DONE TRAINING----")
+        print("----DONE TRAINING----")
 
     def _run_steps(self, steps_to_do):
 

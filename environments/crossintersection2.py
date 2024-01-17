@@ -202,7 +202,6 @@ if __name__ == '__main__':
 
     for step in range(200):
         traci.simulationStep()
-        print(step)
         environment.get_traffic_light_state()
 
 

@@ -13,7 +13,7 @@ import csv
 import os 
 
 # Environment
-sumo_mode = "sumo-gui"
+sumo_mode = "sumo"
 max_step = 500
 percentage_straight = 0.75
 min_green_phase_steps = 10
@@ -27,7 +27,7 @@ environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_s
 hidden_dim = 124
 epsilon_decrease = 0.01**(1/1000) # 0.1 fjernes pr. 100 epsioder
 gamma = 0.75
-weights_path = "300hidden.pth"
+weights_path = "17.01v4.pth"
 #model = DQN(1, 5, hidden_dim, epsilon_decrease, gamma, weights_path)
 memory = Memory(50000)
 
@@ -38,10 +38,10 @@ interval = 35
 #model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 1000
+episodes = 300
 episode_stats = []
 overall_reward_queue_length = []
-ephocs = 200
+ephocs = 100
 batch_size = 100
 
 # Initialize a plot
@@ -66,7 +66,7 @@ for episode in range(episodes):
     print(f"-----------------------------Simulating episode {episode+1}-----------------------------")
     # Assuming Simulation is defined elsewhere
     simulation = Simulation(max_step, environment, model, memory, ephocs, batch_size)
-    #simulation._model.epsilon = max(1 - (episode*2 / episodes), 0.1)
+    #simulation._model.epsilon = max(1 - (episode*2/ episodes),0.1)
     simulation._model.epsilon = 0
 
     simulation.run()
