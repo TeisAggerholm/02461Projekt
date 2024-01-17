@@ -8,7 +8,7 @@ class CrossIntersection():
     # funktion: skift lys (tager id på lyskryds som input)
     # funktion: skift til action nr. (tager action nr. som input) - bruger skift lys funktion
 
-    def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step):
+    def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, seed:bool):
         self.sumo_path = 'sumo_files/osm.sumocfg'
         self.net_path = "sumo_files/osm.netccfg"
         self.sumo_mode = sumo_mode
@@ -16,6 +16,7 @@ class CrossIntersection():
         self.min_green_phase_steps = min_green_phase_steps
         self.yellow_phase_steps = yellow_phase_steps
         self.red_phase_steps = red_phase_steps
+        self.seed = seed 
 
         self.num_actions = 2
 
@@ -37,7 +38,7 @@ class CrossIntersection():
         
 
     def run_env(self):
-        self.route_generate(self.max_step, 0.75)
+        self.route_generate(self.max_step, 0.75, 123)
         traci.start([self.sumo_mode, "-c", self.sumo_path])
         self._set_phases()
 
@@ -76,11 +77,11 @@ class CrossIntersection():
 
         return self.min_green_phase_steps
 
-    def route_generate(self, max_step, percentage_straight): 
+    def route_generate(self, max_step, percentage_straight, seed_num): 
 
-        # if(self.route_seed):
-        #     random.seed(self.route_seed)
-        #     np.random.seed(self.route_seed)
+        if(self.seed):
+            random.seed(seed_num)
+            np.random.seed(seed_num)
 
         #Anvend ved kontrol: seed. 
 
