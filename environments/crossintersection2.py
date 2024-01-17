@@ -1,54 +1,86 @@
 import traci
 import os
-import numpy as np
 import random
+import numpy as np
 
 class CrossIntersection():
+    # funktion: _get_state
+    # funktion: skift lys (tager id på lyskryds som input)
+    # funktion: skift til action nr. (tager action nr. som input) - bruger skift lys funktion
 
-    def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning, route_seed):
+    def __init__(self, sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step):
         self.sumo_path = 'sumo_files/osm.sumocfg'
         self.net_path = "sumo_files/osm.netccfg"
         self.sumo_mode = sumo_mode
         self.max_step = max_step
-        self.percentage_straight = percentage_straight
-        self.car_intensity_per_min = car_intensity_per_min
-        self.spredning = spredning
-        self.route_seed = route_seed
-
         self.min_green_phase_steps = min_green_phase_steps
         self.yellow_phase_steps = yellow_phase_steps
         self.red_phase_steps = red_phase_steps
 
         self.num_actions = 2
+
         self.actions_def = {
             0: {'green_phase_index': 0, 'yellow_phase_index': 1},
             1: {'green_phase_index': 3, 'yellow_phase_index': 4}
         }
 
         self.phases = [
-            traci.trafficlight.Phase(10000, "rrrrGGggrrrrGGgg"), # NS green phase
-            traci.trafficlight.Phase(10000, "rrrryyyyrrrryyyy"), # NS yellow phase
-            traci.trafficlight.Phase(10000, "rrrrrrrrrrrrrrrr"), # all red phase
-            traci.trafficlight.Phase(10000, "GGggrrrrGGggrrrr"), # EW green phase
-            traci.trafficlight.Phase(10000, "yyyyrrrryyyyrrrr"), # EW yellow phase
+            traci.trafficlight.Phase(10, "rrrrGGggrrrrGGgg"), # NS green phase
+            traci.trafficlight.Phase(2, "rrrryyyyrrrryyyy"), # NS yellow phase
+            traci.trafficlight.Phase(2, "rrrrrrrrrrrrrrrr"), # all red phase
+            traci.trafficlight.Phase(10, "GGggrrrrGGggrrrr"), # EW green phase
+            traci.trafficlight.Phase(2, "yyyyrrrryyyyrrrr"), # EW yellow phase
         ]
 
         self.lane = ["-125514713_0", "-125514711_0", "-548975769_0", "125514709_0"]
         self.traffic_light_system_id = "24960712"
-
-        self.phaseQueue = []
-        self.steps_in_current_phase = 0
+        
 
     def run_env(self):
-        self.route_generate(self.max_step, self.percentage_straight, self.car_intensity_per_min, self.spredning)
+        self.route_generate(self.max_step, 0.75)
         traci.start([self.sumo_mode, "-c", self.sumo_path])
         self._set_phases()
 
-    def route_generate(self, max_step, percentage_straight, car_intensity_per_min, spredning): 
+    def _get_phases(self):
+        tls_definitions = traci.trafficlight.getCompleteRedYellowGreenDefinition(self.traffic_light_system_id)
+        for logic in tls_definitions:
+            print(f"Traffic Light {self.traffic_light_system_id} has the following phases in program {logic.programID}:")
+            for phase in logic.getPhases():
+                print(f"Phase index {logic.getPhases().index(phase)}: {phase.state} with duration {phase.duration} seconds")
 
-        if(self.route_seed):
-            random.seed(self.route_seed)
-            np.random.seed(self.route_seed)
+    def _set_phases(self):
+
+        logic = traci.trafficlight.Logic(
+            programID="newProgramID",
+            type=0, 
+            currentPhaseIndex=0,
+            phases=self.phases
+        )
+
+        traci.trafficlight.setCompleteRedYellowGreenDefinition(self.traffic_light_system_id, logic)
+  
+    def set_yellow_phase(self, action):
+        phase_index = self.actions_def[action]['yellow_phase_index']
+        traci.trafficlight.setPhase(self.traffic_light_system_id, phase_index)
+
+        return self.yellow_phase_steps
+
+    def set_red_phase(self):
+        phase_index = 2
+        traci.trafficlight.setPhase(self.traffic_light_system_id, phase_index)
+        return self.red_phase_steps
+
+    def set_green_phase(self, action):
+        phase_index = self.actions_def[action]['green_phase_index']
+        traci.trafficlight.setPhase(self.traffic_light_system_id, phase_index)
+
+        return self.min_green_phase_steps
+
+    def route_generate(self, max_step, percentage_straight): 
+
+        # if(self.route_seed):
+        #     random.seed(self.route_seed)
+        #     np.random.seed(self.route_seed)
 
         #Anvend ved kontrol: seed. 
 
@@ -138,40 +170,6 @@ class CrossIntersection():
                     else:
                         raise ValueError(f"Failed to extract xsi_link from link{self.net_path}")
 
-    def _get_phases(self):
-        tls_definitions = traci.trafficlight.getCompleteRedYellowGreenDefinition(self.traffic_light_system_id)
-        for logic in tls_definitions:
-            print(f"Traffic Light {self.traffic_light_system_id} has the following phases in program {logic.programID}:")
-            for phase in logic.getPhases():
-                print(f"Phase index {logic.getPhases().index(phase)}: {phase.state} with duration {phase.duration} seconds")
-
-    def _set_phases(self):
-
-        logic = traci.trafficlight.Logic(
-            programID="newProgramID",
-            type=0, 
-            currentPhaseIndex=0,
-            phases=self.phases
-        )
-
-        traci.trafficlight.setCompleteRedYellowGreenDefinition(self.traffic_light_system_id, logic)
-
-    def push_yellow_phase(self, action):
-        phase_index = self.actions_def[action]['yellow_phase_index']
-        self.phaseQueue.append({"phase_index": phase_index, "steps_to_do": self.yellow_phase_steps})
-
-    def push_red_phase(self):
-        phase_index = 2
-        self.phaseQueue.append({"phase_index": phase_index, "steps_to_do": self.red_phase_steps})
-
-    def push_green_phase(self, action):
-        phase_index = self.actions_def[action]['green_phase_index']
-        self.phaseQueue.append({"phase_index": phase_index, "steps_to_do": self.min_green_phase_steps})
-
-    def isActionable(self):
-        if len(self.phaseQueue) == 0:
-            return True
-
     def get_traffic_light_state(self):
 
         state_string = traci.trafficlight.getRedYellowGreenState(self.traffic_light_system_id)
@@ -192,48 +190,6 @@ class CrossIntersection():
         
         return light_states
 
-    def increment_steps_in_current_phase(self):
-        if len(self.phaseQueue) > 0:
-            self.steps_in_current_phase += 1     
-    
-    def update_current_phase(self):
-        if len(self.phaseQueue) > 0:
-            current_phase = self.phaseQueue[0]
-            if current_phase["steps_to_do"] == self.steps_in_current_phase:
-                self.phaseQueue.pop(0)
-                self.steps_in_current_phase = 0
-        
-    def set_lights(self):
-        if len(self.phaseQueue) > 0:
-            traci.trafficlight.setPhase(self.traffic_light_system_id, self.phaseQueue[0]["phase_index"])
-    
-
-        # if len(self.phaseQueue) > 0:
-        #     pastPhase = self.phaseQueue[0]
-        #     self.steps_in_current_phase += 1
-
-        #     if pastPhase["steps_to_do"] < self.steps_in_current_phase:
-        #         self.phaseQueue.pop()
-        #         self.steps_in_current_phase = 0
-
-        #     print(self.steps_in_current_phase)  
-
-        #     if len(self.phaseQueue) > 0:
-        #         activated_phase_index = traci.trafficlight.getPhase(self.traffic_light_system_id)
-        #         currentPhase = self.phaseQueue[0]
-
-        #         if activated_phase_index != currentPhase["phase_index"]:
-        #             traci.trafficlight.setPhase(self.traffic_light_system_id, currentPhase["phase_index"])
-
-        #     # self.steps_in_current_phase = 0
-        #     # self.steps_in_current_phase += 1
-
-        #     # activated_phase_index = traci.trafficlight.getPhase(self.traffic_light_system_id)
-        #     # currentPhase = self.phaseQueue[0]
-
-        #     # if activated_phase_index != currentPhase["phase_index"]:
-        #     #     print(currentPhase["phase_index"])
-        #     #     traci.trafficlight.setPhase(self.traffic_light_system_id, currentPhase["phase_index"])
 
 if __name__ == '__main__':
     sumo_config_path = 'sumo_files/osm.sumocfg'
