@@ -22,6 +22,7 @@ class Simulation:
         self._waiting_times = {}
         self.overall_reward_queue_length = 0
         self.epochs = epochs
+        self.episode_losses = []
 
     def run(self):
         self._environment.run_env()
@@ -78,7 +79,7 @@ class Simulation:
         self._model.epsilon_dec_fun()
         for i in range(self.epochs): 
             batch = self.memory.get_batch(50)
-            self._model.train(batch)
+            self.episode_losses.append(self._model.train(batch))
         print("---DONE TRAINING---")
 
     

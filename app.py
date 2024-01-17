@@ -11,7 +11,7 @@ import csv
 import os 
 
 # Environment
-sumo_mode = "sumo-gui"
+sumo_mode = "sumo"
 max_step = 500
 percentage_straight = 0.75
 min_green_phase_steps = 10
@@ -26,7 +26,7 @@ final_score_weights = {"total_waiting_time": 1, "halting_vehicle_count": 1,
 environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning, seed) 
 
 # DQN Model
-hidden_dim = 300
+hidden_dim = 100
 epsilon_decrease = 0.01**(1/1000) # 0.1 fjernes pr. 100 epsioder
 gamma = 0.99
 weights_path = "assasaasada.pth"
@@ -40,7 +40,7 @@ interval = 35
 #model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 300
+episodes = 500
 episode_stats = []
 overall_reward_queue_length = []
 ephocs = 400
@@ -48,7 +48,6 @@ ephocs = 400
 # Initialize a plot
 plt.figure(figsize=(12, 10))
 plt.ion()
-
 
 #SAVE TO CSV file: 
 data_folder = 'data'
@@ -63,17 +62,23 @@ file_path = os.path.join(data_folder, file_name)
 
 rewards = []
 queue_length = []
+loss = []
+
+loss = []
+
 
 for episode in range(episodes):
     print(f"-----------------------------Simulating episode {episode+1}-----------------------------")
     # Assuming Simulation is defined elsewhere
     simulation = Simulation(max_step, environment, model, final_score_weights, episodes, memory, ephocs)
-    simulation._model.epsilon = 1 - (episode / episodes)
-    
+        
+    simulation._model.epsilon = max(1 - (episode / episodes)*2, 0.1)
+
     simulation.run()
     print("Overall reward: ", simulation.overall_reward)
     episode_stats.append(simulation.overall_reward)
     overall_reward_queue_length.append(simulation.overall_reward_queue_length)
+    loss.extend(simulation.episode_losses)
 
     # Generating a list of episode indices
     episode_indices = list(range(1, episodes + 1))
