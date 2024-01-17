@@ -10,7 +10,7 @@ class DQN_prev(nn.Module):
         self.epsilon = 1
         self.epsilon_decrease = epsilon_decrease
         self.gamma = gamma
-        self.learning_rate = 0.001
+        self.learning_rate = 0.0001
 
         self.num_actions = num_actions
         action_dim = num_actions

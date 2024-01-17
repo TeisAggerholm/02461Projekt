@@ -26,8 +26,8 @@ environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_s
 # DQN Model
 hidden_dim = 124
 epsilon_decrease = 0.01**(1/1000) # 0.1 fjernes pr. 100 epsioder
-gamma = 0.75
-weights_path = "17.01v4.pth"
+gamma = 0.99
+weights_path = "17.01v5.pth"
 #model = DQN(1, 5, hidden_dim, epsilon_decrease, gamma, weights_path)
 memory = Memory(50000)
 
@@ -38,10 +38,10 @@ interval = 35
 #model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 300
+episodes = 1000
 episode_stats = []
 overall_reward_queue_length = []
-ephocs = 100
+ephocs = 200
 batch_size = 100
 
 # Initialize a plot
@@ -61,34 +61,47 @@ file_name = f"rewards_{model_class_name}_{num_files}.csv"
 file_path = os.path.join(data_folder, file_name)
 
 rewards = []
+loss = []
+
+
+
 
 for episode in range(episodes):
     print(f"-----------------------------Simulating episode {episode+1}-----------------------------")
     # Assuming Simulation is defined elsewhere
     simulation = Simulation(max_step, environment, model, memory, ephocs, batch_size)
-    #simulation._model.epsilon = max(1 - (episode*2/ episodes),0.1)
-    simulation._model.epsilon = 0
+    simulation._model.epsilon = 1 - (episode/ episodes)
+    #simulation._model.epsilon = 0
 
     simulation.run()
     print("Overall reward: ", simulation.overall_reward)
     episode_stats.append(simulation.overall_reward)
+    
+    loss.extend(simulation.episode_losses)
 
     # Generating a list of episode indices
-    episode_indices = list(range(1, episodes + 1))
+   # episode_indices = list(range(1, episodes + 1))
 
-    # First subplot for overall_reward
-    plt.subplot(2, 1, 1)  # (rows, columns, panel number)
-    plt.scatter(episode + 1, simulation.overall_reward, color='b')
-    plt.title(f'Overall Reward per Episode\nEpsilon: {simulation._model.epsilon}')
-    plt.xlabel('Episode')
-    plt.ylabel('Overall Reward')
-    plt.xlim(1, episodes)
-    plt.ylim(min(episode_stats) - 10, max(episode_stats) + 10)
-    plt.grid(True)
+    # # First subplot for overall_reward
+    # plt.subplot(2, 1, 1)  # Changed from 2, 1, 1 to 3, 1, 1
+    # plt.scatter(episode + 1, simulation.overall_reward, color='b')
+    # plt.title(f'Overall Reward per Episode\nEpsilon: {simulation._model.epsilon}')
+    # plt.xlabel('Episode')
+    # plt.ylabel('Overall Reward')
+    # plt.xlim(1, episodes)
+    # plt.ylim(min(episode_stats) - 10, max(episode_stats) + 10)
+    # plt.grid(True)
 
-    plt.pause(0.1)  # Pause to update the plots
+    # plt.subplot(2, 1, 2)
+    # loss_indices = list(range(len(loss)))  # Generate indices for the loss list
+    # plt.plot(loss_indices, loss, color='g')  # Plotting the loss values
+    # plt.title('Loss pr. Epoch')
+    # plt.xlabel('Epoch')
+    # plt.ylabel('Loss')
+    # plt.xlim(0, len(loss))  # Set the x-axis limit to the length of the loss list
+    # plt.grid(True)
 
-
+    # plt.pause(0.1)
     #Save overall reward to CSV.
     rewards.append(simulation.overall_reward)
 

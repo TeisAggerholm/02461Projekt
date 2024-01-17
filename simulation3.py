@@ -15,6 +15,7 @@ class Simulation:
         self.overall_reward = 0
         
         self._waiting_times = {}
+        self.episode_losses = []
 
         self.batch_size = batch_size
 
@@ -72,7 +73,7 @@ class Simulation:
 
         for _ in range(self.epochs):
             batch = self._memory.get_batch(self.batch_size)
-            self._model.train(batch)
+            self.episode_losses.append(self._model.train(batch))
         print("----DONE TRAINING----")
 
     def _run_steps(self, steps_to_do):
