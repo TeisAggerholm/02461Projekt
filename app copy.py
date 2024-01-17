@@ -11,6 +11,7 @@ from memory import Memory
 import matplotlib.pyplot as plt
 import csv 
 import os 
+import time
 
 # Environment
 sumo_mode = "sumo"
@@ -21,7 +22,8 @@ yellow_phase_steps = 2
 red_phase_steps = 1
 car_intensity_per_min = 15
 spredning = 7
-environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step) 
+seed = True
+environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, seed) 
 
 # DQN Model
 hidden_dim = 124
@@ -37,16 +39,9 @@ memory = Memory(50000)
 model = Interval_model(environment.num_actions)
 
 # Simulation
-episodes = 100
-episode_stats = []
 overall_reward_queue_length = []
 ephocs = 200
 batch_size = 100
-
-# Initialize a plot
-plt.figure(figsize=(12, 10))
-plt.ion()
-
 
 #SAVE TO CSV file: 
 data_folder = 'data'
@@ -62,56 +57,30 @@ file_path = os.path.join(data_folder, file_name)
 rewards = []
 loss = []
 
+# LOOP SETTINGS
+episodes = 2
+x_hours = 0
+end_time = time.time() + x_hours * 3600
 
+episode = 0
 
-
-for episode in range(episodes):
-    print(f"-----------------------------Simulating episode {episode+1}-----------------------------")
-    # Assuming Simulation is defined elsewhere
+while time.time() < end_time or len(rewards) < episodes:
+    episode += 1
+    print(f"-----------------------------Simulating episode {episode}-----------------------------")
     simulation = Simulation(max_step, environment, model, memory, ephocs, batch_size)
     simulation._model.epsilon = 1 - (episode/ episodes)
-    #simulation._model.epsilon = 0
 
     simulation.run()
     print("Overall reward: ", simulation.overall_reward)
-    episode_stats.append(simulation.overall_reward)
-    
+
     loss.extend(simulation.episode_losses)
-
-    # Generating a list of episode indices
-   # episode_indices = list(range(1, episodes + 1))
-
-    # # First subplot for overall_reward
-    # plt.subplot(2, 1, 1)  # Changed from 2, 1, 1 to 3, 1, 1
-    # plt.scatter(episode + 1, simulation.overall_reward, color='b')
-    # plt.title(f'Overall Reward per Episode\nEpsilon: {simulation._model.epsilon}')
-    # plt.xlabel('Episode')
-    # plt.ylabel('Overall Reward')
-    # plt.xlim(1, episodes)
-    # plt.ylim(min(episode_stats) - 10, max(episode_stats) + 10)
-    # plt.grid(True)
-
-    # plt.subplot(2, 1, 2)
-    # loss_indices = list(range(len(loss)))  # Generate indices for the loss list
-    # plt.plot(loss_indices, loss, color='g')  # Plotting the loss values
-    # plt.title('Loss pr. Epoch')
-    # plt.xlabel('Epoch')
-    # plt.ylabel('Loss')
-    # plt.xlim(0, len(loss))  # Set the x-axis limit to the length of the loss list
-    # plt.grid(True)
-
-    # plt.pause(0.1)
-    #Save overall reward to CSV.
     rewards.append(simulation.overall_reward)
 
 with open(file_path, 'w', newline='') as file:
     writer = csv.writer(file)
     for i in range(len(rewards)):
         writer.writerow([rewards[i]])
-    
+
 
 model.save_model()
 print('Model saved')
-
-plt.ioff()  # Turn off interactive mode
-plt.show()  # Show the final plot
