@@ -11,7 +11,7 @@ import csv
 import os 
 
 # Environment
-sumo_mode = "sumo"
+sumo_mode = "sumo-gui"
 max_step = 500
 percentage_straight = 0.75
 min_green_phase_steps = 10
@@ -29,7 +29,7 @@ environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_s
 hidden_dim = 300
 epsilon_decrease = 0.01**(1/1000) # 0.1 fjernes pr. 100 epsioder
 gamma = 0.99
-weights_path = "300hidden.pth"
+weights_path = "assasaasada.pth"
 #model = DQN(1, 5, hidden_dim, epsilon_decrease, gamma, weights_path)
 memory = Memory(50000)
 

@@ -145,6 +145,11 @@ class CrossIntersection():
             for phase in logic.getPhases():
                 print(f"Phase index {logic.getPhases().index(phase)}: {phase.state} with duration {phase.duration} seconds")
 
+    def set_specific_phase(self, action):
+        phase_index = self.actions_def[action]['green_phase_index']
+        traci.trafficlight.setPhase(self.traffic_light_system_id, phase_index)
+
+
     def _set_phases(self):
 
         logic = traci.trafficlight.Logic(
