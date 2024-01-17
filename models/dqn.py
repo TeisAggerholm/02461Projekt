@@ -7,7 +7,7 @@ import random
 class DQN(nn.Module):
     def __init__(self, num_actions, state_dim, hidden_dim, epsilon_decrease, gamma, weights_path):
         super(DQN, self).__init__()
-        self.epsilon = 1
+        self.epsilon = 0
         self.epsilon_decrease = epsilon_decrease
         self.gamma = gamma
         self.learning_rate = 0.001
@@ -89,7 +89,11 @@ class DQN(nn.Module):
 
         return loss.item()
     
-    def epsilon_dec_fun(self): 
+    def epsilon_dec_fun(self, currentStep): 
+        
+        if self.epsilon == 0: 
+            print(self.epsilon)
+            return 
         self.epsilon = (self.epsilon - 0.1) * self.epsilon_decrease + 0.1
         print("Epsilon: ",self.epsilon)
 
@@ -98,4 +102,3 @@ class DQN(nn.Module):
     
     def load_model(self):
         self.load_state_dict(torch.load("weights/"+self.weights_path))
-        

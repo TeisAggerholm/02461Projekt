@@ -10,9 +10,9 @@ import csv
 import os 
 
 # Environment
-sumo_mode = "sumo"
+sumo_mode = "sumo-gui"
 max_step = 400
-percentage_straight = 0.75
+percentage_straight = 1
 min_green_phase_steps = 10
 yellow_phase_steps = 2
 red_phase_steps = 2
@@ -29,19 +29,19 @@ input_dim = 5
 hidden_dim = 124
 epsilon_decrease = 0.01**(1/1000) # 0.1 fjernes pr. 100 epsioder
 gamma = 0.99
-weights_path = "124.pth"
+weights_path = "124_400.pth"
 model = DQN(1, input_dim, hidden_dim, epsilon_decrease, gamma, weights_path)
 memory = Memory(50000)
 
 # Interval_model
-interval = 35
+interval = 20
 #model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
 
 # Simulation
-episodes = 1000
+episodes = 500
 episode_stats = []
 overall_reward_queue_length = []
-ephocs = 400
+ephocs = 0
 
 # Initialize a plot
 plt.figure(figsize=(12, 10))
@@ -76,26 +76,28 @@ for episode in range(episodes):
     episode_indices = list(range(1, episodes + 1))
 
     # First subplot for overall_reward
-    plt.subplot(2, 1, 1)  # (rows, columns, panel number)
-    plt.scatter(episode + 1, simulation.overall_reward, color='b')
-    plt.title(f'Overall Reward per Episode\nEpsilon: {simulation._model.epsilon}')
-    plt.xlabel('Episode')
-    plt.ylabel('Overall Reward')
-    plt.xlim(1, episodes)
-    plt.ylim(min(episode_stats) - 10, max(episode_stats) + 10)
-    plt.grid(True)
 
-    # Second subplot for overall_reward_queue_length
-    plt.subplot(2, 1, 2)
-    plt.scatter(episode + 1, overall_reward_queue_length[-1], color='r')
-    plt.title('Overall Reward Queue Length per Episode')
-    plt.xlabel('Episode')
-    plt.ylabel('Reward Queue Length')
-    plt.xlim(1, episodes)
-    plt.ylim(min(overall_reward_queue_length) - 10, max(overall_reward_queue_length) + 10)
-    plt.grid(True)
 
-    plt.pause(0.1)  # Pause to update the plots
+    # plt.subplot(2, 1, 1)  # (rows, columns, panel number)
+    # plt.scatter(episode + 1, simulation.overall_reward, color='b')
+    # plt.title(f'Overall Reward per Episode\nEpsilon: {simulation._model.epsilon}')
+    # plt.xlabel('Episode')
+    # plt.ylabel('Overall Reward')
+    # plt.xlim(1, episodes)
+    # plt.ylim(min(episode_stats) - 10, max(episode_stats) + 10)
+    # plt.grid(True)
+
+    # # Second subplot for overall_reward_queue_length
+    # plt.subplot(2, 1, 2)
+    # plt.scatter(episode + 1, overall_reward_queue_length[-1], color='r')
+    # plt.title('Overall Reward Queue Length per Episode')
+    # plt.xlabel('Episode')
+    # plt.ylabel('Reward Queue Length')
+    # plt.xlim(1, episodes)
+    # plt.ylim(min(overall_reward_queue_length) - 10, max(overall_reward_queue_length) + 10)
+    # plt.grid(True)
+
+    # plt.pause(0.1)  # Pause to update the plots
 
 
     #Save overall reward to CSV.
@@ -112,5 +114,5 @@ with open(file_path, 'w', newline='') as file:
 model.save_model()
 print('Model saved')
 
-plt.ioff()  # Turn off interactive mode
-plt.show()  # Show the final plot
+# plt.ioff()  # Turn off interactive mode
+# plt.show()  # Show the final plot
