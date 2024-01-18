@@ -1,134 +1,113 @@
 import traci
 import os
-from models.dqn import DQN
-import numpy as np
 import torch
+import numpy as np
 
 class Simulation:
-    def __init__(self, max_step, _environment, _model, final_score_weights, episodes, memory, epochs):
-        self.episodes = episodes
+    def __init__(self, max_step, _environment, _model, _memory, epochs, batch_size):
         self.max_step = max_step
         self._environment = _environment
         self._model = _model
-        self._currentStep = 0
-        self.sum_queue = 0
-        self.co2_emission = 0
-        self.waiting_times = {}
-        self.stats = {}
-        self.final_score_weights = final_score_weights
-        self.memory = memory
-        self.overall_reward = 0
-        self.batch_size = 100
-        self._waiting_times = {}
-        self.overall_reward_queue_length = 0
+        self._memory = _memory
         self.epochs = epochs
+
+        self._currentStep = 0
+        self.overall_reward = 0
+        
+        self._waiting_times = {}
+        self.episode_losses = []
+
+        self.batch_size = batch_size
 
     def run(self):
         self._environment.run_env()
+
         old_action = -1
-        last_executed_action = -1
-        last_wait = 0
-        last_wait_actionable_wait = 0
+        old_total_wait  = 0
+        old_state = -1
         
-        previous = {"state_list": 0, "action": 0, "reward": 0}
-
+        
         while self._currentStep < self.max_step:
+            state = self.get_state()
 
-            # STATE
-            state = self.get_state()   
-
-
+            #REWARD
+            current_total_wait = self.get_waiting_time()
+            reward = old_total_wait - current_total_wait
+            
             # ACTION
             action = self._model.choose_action(state, self._currentStep)
-            isActionable = self._environment.isActionable()
-            
-            if isActionable:
+
+            # SAVE IN MEMORY
+            if self._currentStep != 0:
+                self._memory.add_experience((old_state.tolist(), old_action, reward, state.tolist(),0))
                 
-                #ADD TO MEMORY
-                if old_action != -1:
-                    current_total_wait = self.get_waiting_time()
-                    exp = (previous["state_list"], previous["action"], last_wait_actionable_wait - current_total_wait, state.tolist(), 0)
-                    #print("State_list", exp) #PRINT FOR STATE_LIST pr STEP
-                    self.memory.add_experience(exp)
-                
-                if action != last_executed_action and old_action != -1:
-                    self._environment.push_yellow_phase(last_executed_action)
-                    self._environment.push_red_phase()
-                    self._environment.push_yellow_phase(action)
-                    self._environment.push_green_phase(action)
-                    last_executed_action = action
-                
-                self._environment.push_green_phase(action)
-                last_executed_action = action
+            # ENIVRONMENT UPDATE WITH ACTION
+            if old_action == -1:
+                steps_to_do_green_phase = self._environment.set_green_phase(action)
+                self._run_steps(steps_to_do_green_phase)
+            elif action != old_action:
+                steps_to_do_yellow_phase_1 = self._environment.set_yellow_phase(old_action)
+                self._run_steps(steps_to_do_yellow_phase_1)
+
+                steps_to_do_red_phase = self._environment.set_red_phase()
+                self._run_steps(steps_to_do_red_phase)
+
+                steps_to_do_yellow_phase_2 = self._environment.set_yellow_phase(action)
+                self._run_steps(steps_to_do_yellow_phase_2)
+
+                steps_to_do_green_phase = self._environment.set_green_phase(action)
+                self._run_steps(steps_to_do_green_phase)
+            else:
+                steps_to_do_green_phase = self._environment.set_green_phase(action)
+                self._run_steps(steps_to_do_green_phase)
 
 
-            # REWARD
-            current_total_wait = self.get_waiting_time()
-            reward = last_wait - current_total_wait
-            # UPDATE        
-            self._environment.set_lights()
-            traci.simulationStep()    
-            self._currentStep += 1     
-            self._environment.increment_steps_in_current_phase()
-            self._environment.update_current_phase()
-            last_wait = current_total_wait
+            # UPDATE
+            old_action = action
+            old_state = state
+            old_total_wait = current_total_wait
 
-            # ONLY NEGATIVE REWARD FOR TOTAL REWARD
+            # SAVING OVERALL reward
             if reward < 0: 
                 self.overall_reward += reward
+           
 
-            # OVERALL_REWARD_QUEUE_LENGTH   
-            self.overall_reward_queue_length += sum(state.tolist())
-
-            if isActionable:
-                previous["state_list"] = state.tolist()
-                previous["action"] = action
-                previous["reward"] = reward
-                old_action = action
-                last_wait_actionable_wait = current_total_wait
-            
         traci.close()
 
+        # TRAINING LOOP
+        for _ in range(self.epochs):
+            batch = self._memory.get_batch(self.batch_size)
+            self.episode_losses.append(self._model.train(batch))
+        print("----DONE TRAINING----")
 
-        self.overall_reward
-        
-        self._model.epsilon_dec_fun()
-        for i in range(self.epochs): 
-            batch = self.memory.get_batch(50)
-            self._model.train(batch)
-        print("---DONE TRAINING---")
+    def _run_steps(self, steps_to_do):
 
+        if(self._currentStep + steps_to_do) >= self.max_step:
+            steps_to_do = self.max_step - self._currentStep
+
+        while steps_to_do > 0:
+            traci.simulationStep() 
+            self._currentStep += 1
+            steps_to_do -= 1
     
-    def queue_length_state(self): 
-        Halt_N = traci.edge.getLastStepHaltingNumber("-125514711")
-        Halt_S = traci.edge.getLastStepHaltingNumber("125514709")
-        Halt_E = traci.edge.getLastStepHaltingNumber("548975769")
-        Halt_W = traci.edge.getLastStepHaltingNumber("-125514713")
-          
-        return torch.Tensor([Halt_N, Halt_S, Halt_E, Halt_W])
-
-
     def get_waiting_time(self):
-        incoming_roads = ["-125514711","125514709","548975769","-125514713"]
+        incoming = ["-125514711","125514709","548975769","-125514713"]
         cars = traci.vehicle.getIDList()
-        for car_id in cars: 
-            wait_time = traci.vehicle.getAccumulatedWaitingTime(car_id)
-            road_id = traci.vehicle.getRoadID(car_id) #Get the road of the car
-            if road_id in incoming_roads: #Only waiting times of incoming road.
-                self._waiting_times[car_id] = wait_time
+        for car in cars: 
+            wait = traci.vehicle.getAccumulatedWaitingTime(car)
+            road = traci.vehicle.getRoadID(car)
+            if road in incoming: 
+                self._waiting_times[car] = wait
             else: 
-                if car_id in self._waiting_times: # A car that has cleared the intersection. 
-                    del self._waiting_times[car_id]
+                if car in self._waiting_times: 
+                    del self._waiting_times[car]
         total_waiting_time = sum(self._waiting_times.values())
         return total_waiting_time
     
     def get_state(self): 
-
         car_list = traci.vehicle.getIDList()    
         state = np.zeros(80)
         
-
-
         for car in car_list: 
             
             route_id = traci.vehicle.getRouteID(car)
@@ -196,4 +175,4 @@ class Simulation:
                 state[car_position] = 1  # write the position of the car car_id in the state array in the form of "cell occupied"
                 
         return torch.Tensor(state.tolist())
-        
+

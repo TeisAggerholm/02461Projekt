@@ -7,7 +7,6 @@ class Memory:
     
     def add_experience(self, experience):
         self._experiences.append(experience)
-
         if len(self._experiences) > self.capacity:
             self._experiences.pop(0)
 

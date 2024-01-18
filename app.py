@@ -1,58 +1,68 @@
 import importlib
-import utils
-from simulation3 import Simulation
-# from simulation import Simulation
-# from environments.crossintersection import CrossIntersection
-from environments.corssintersection2 import CrossIntersection
+from simulation import Simulation
+from environments.crossintersection import CrossIntersection
 from models.interval_model import Interval_model
 from models.dqn import DQN
-from models.dqn_old import DQN_prev
 from memory import Memory
 import matplotlib.pyplot as plt
 import csv 
 import os 
+import time
 
 # Environment
 sumo_mode = "sumo"
 max_step = 500
-percentage_straight = 0.75
 min_green_phase_steps = 10
 yellow_phase_steps = 2
-red_phase_steps = 2
-car_intensity_per_min = 15
-spredning = 7
-seed = None
-final_score_weights = {"total_waiting_time": 1, "halting_vehicle_count": 1,
-                       "co2_emission_total": 1, "avg_queue_length": 1, 
-                       "avg_wait_time": 1}
-environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step, percentage_straight, car_intensity_per_min, spredning, seed) 
+red_phase_steps = 1
 
-# DQN Model
-hidden_dim = 300
-epsilon_decrease = 0.01**(1/1000) # 0.1 fjernes pr. 100 epsioder
-gamma = 0.99
-weights_path = "300hidden.pth"
-#model = DQN(1, 5, hidden_dim, epsilon_decrease, gamma, weights_path)
+environment = CrossIntersection(sumo_mode, min_green_phase_steps, yellow_phase_steps, red_phase_steps, max_step) 
+
+# Model parameters
+hidden_dim = 124
+gamma = 0.75
+weights_path = "Training_overnight.pth"
 memory = Memory(50000)
 
-model = DQN_prev(2,80,hidden_dim,epsilon_decrease,gamma,weights_path)
+
+# Dqn_model
+model = DQN(2,80,hidden_dim,gamma,weights_path)
 
 # Interval_model
-interval = 35
-#model = Interval_model(environment.num_actions, interval, yellow_phase_steps, red_phase_steps)
+# model = Interval_model(environment.num_actions)
 
 # Simulation
-episodes = 300
-episode_stats = []
-overall_reward_queue_length = []
-ephocs = 400
+ephocs = 200
+batch_size = 100
 
-# Initialize a plot
-plt.figure(figsize=(12, 10))
-plt.ion()
+# LOOP SETTINGS
+episodes = 160
+x_hours = 0
+end_time = time.time() + x_hours * 3600
+
+rewards = []
+loss = []
+
+episode = 0
+while time.time() < end_time or len(rewards) < episodes:
+    episode += 1
+    print(f"-----------------------------Simulating episode {episode}-----------------------------")
+    simulation = Simulation(max_step, environment, model, memory, ephocs, batch_size)
+    simulation._model.epsilon = max(1 - (episode/episodes),0.1)
+    print(f"Epsilon: {simulation._model.epsilon}")
+    #simulation._model.epsilon = 0
+    simulation.run()
+    print("Overall reward: ", simulation.overall_reward)
+
+    loss.extend(simulation.episode_losses)
+    rewards.append(simulation.overall_reward)
+
+    #Temp model save
+    if episode % 100 == 0: 
+        model.save_model()
 
 
-#SAVE TO CSV file: 
+# SAVE TO CSV file: 
 data_folder = 'data'
 if not os.path.exists(data_folder):
     os.makedirs(data_folder)
@@ -63,59 +73,12 @@ num_files = len([name for name in os.listdir(data_folder) if os.path.isfile(os.p
 file_name = f"rewards_{model_class_name}_{num_files}.csv"
 file_path = os.path.join(data_folder, file_name)
 
-rewards = []
-queue_length = []
-
-for episode in range(episodes):
-    print(f"-----------------------------Simulating episode {episode+1}-----------------------------")
-    # Assuming Simulation is defined elsewhere
-    simulation = Simulation(max_step, environment, model, final_score_weights, episodes, memory, ephocs)
-    simulation._model.epsilon = 1 - (episode / episodes)
-    
-    simulation.run()
-    print("Overall reward: ", simulation.overall_reward)
-    episode_stats.append(simulation.overall_reward)
-    overall_reward_queue_length.append(simulation.overall_reward_queue_length)
-
-    # Generating a list of episode indices
-    episode_indices = list(range(1, episodes + 1))
-
-    # First subplot for overall_reward
-    plt.subplot(2, 1, 1)  # (rows, columns, panel number)
-    plt.scatter(episode + 1, simulation.overall_reward, color='b')
-    plt.title(f'Overall Reward per Episode\nEpsilon: {simulation._model.epsilon}')
-    plt.xlabel('Episode')
-    plt.ylabel('Overall Reward')
-    plt.xlim(1, episodes)
-    plt.ylim(min(episode_stats) - 10, max(episode_stats) + 10)
-    plt.grid(True)
-
-    # Second subplot for overall_reward_queue_length
-    plt.subplot(2, 1, 2)
-    plt.scatter(episode + 1, overall_reward_queue_length[-1], color='r')
-    plt.title('Overall Reward Queue Length per Episode')
-    plt.xlabel('Episode')
-    plt.ylabel('Reward Queue Length')
-    plt.xlim(1, episodes)
-    plt.ylim(min(overall_reward_queue_length) - 10, max(overall_reward_queue_length) + 10)
-    plt.grid(True)
-
-    plt.pause(0.1)  # Pause to update the plots
-
-
-    #Save overall reward to CSV.
-    rewards.append(simulation.overall_reward)
-    queue_length.append(simulation.overall_reward_queue_length)
-    print(simulation.overall_reward_queue_length)
-
 with open(file_path, 'w', newline='') as file:
     writer = csv.writer(file)
     for i in range(len(rewards)):
-        writer.writerow([rewards[i], queue_length[i]])
-    
+        writer.writerow([rewards[i]])
 
+
+# SAVE MODEL
 model.save_model()
-print('Model saved')
-
-plt.ioff()  # Turn off interactive mode
-plt.show()  # Show the final plot
+print('Model saved final')
